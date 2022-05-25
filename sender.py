@@ -21,10 +21,11 @@ parser.add_argument("-i", "--id", type=str,
 args = parser.parse_args()
 
 print(args)
+print(args.receiver_port, args.sender_port)
 
 # Downloading the payload
 
-URL = f"http://3.0.248.41:5000/get_data?student_id={PID}"
+URL = f"http://3.0.248.41:5000/get_data?student_id={args.id}"
 response = requests.get(URL)
 open(args.file, "wb").write(response.content)
 
@@ -33,14 +34,12 @@ UDP_SENDER_PORT_NO = args.sender_port
 UDP_RECEIVER_PORT_NO = args.receiver_port
 UDP_IP_ADDRESS = args.address
 
-clientSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-serverSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-serverSock.bind(('', UDP_RECEIVER_PORT_NO))
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 # Sending an intent message
 
-imessage = f"ID{PID}".encode()
-clientSock.sendto(imessage, (UDP_IP_ADDRESS, UDP_SENDER_PORT_NO))
+imessage = (f"ID{args.id}").encode()
+sock.sendto(imessage, (UDP_IP_ADDRESS, UDP_SENDER_PORT_NO))
 
-TID = serverSock.recvfrom(UDP_RECEIVER_PORT_NO)
+TID = sock.recvfrom(UDP_RECEIVER_PORT_NO)
 print(TID)
