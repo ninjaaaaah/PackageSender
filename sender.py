@@ -26,15 +26,15 @@ response = requests.get(URL)
 open(args.file, "wb").write(response.content)
 
 # Establishing a UDP connection with the server
-UDP_SENDER_PORT_NO = args.sender_port
-UDP_RECEIVER_PORT_NO = args.receiver_port
-UDP_IP_ADDRESS = args.address
+SENDER_PORT_NO = args.sender_port
+RECEIVER_PORT_NO = args.receiver_port
+IP_ADDRESS = args.address
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 # Sending an intent message to the server
-imessage = (f"ID{args.id}").encode()
-sock.sendto(imessage, (UDP_IP_ADDRESS, UDP_SENDER_PORT_NO))
+imessage = "ID{}".format(args.id).encode()
+sock.sendto(imessage, (IP_ADDRESS, SENDER_PORT_NO))
 
-TID = sock.recvfrom(UDP_RECEIVER_PORT_NO)
+TID = sock.recvfrom(RECEIVER_PORT_NO)
 print(TID)
