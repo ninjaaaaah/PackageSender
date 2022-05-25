@@ -8,9 +8,10 @@ SENDER_PORT = 6716
 # Parse command line arguments
 parser = argparse.ArgumentParser()
 
-parser.add_argument("-f", "--file", help="File to send", default="payload.txt")
-parser.add_argument("-a", "--address",
-                    help="Server IP address", default="10.0.7.141")
+parser.add_argument("-f", "--file", type=str,
+                    help="File to send", default=f"{PID}.txt")
+parser.add_argument("-a", "--address", type=str,
+                    help="Server IP address",  default="10.0.7.141")
 parser.add_argument("-s", "--receiver_port", type=int,
                     help="Port number used by the receiver", default=SENDER_PORT)
 parser.add_argument("-c", "--sender_port", type=int,
@@ -19,6 +20,8 @@ parser.add_argument("-i", "--id", type=str,
                     help="Unique Identifier", default=PID)
 
 args = parser.parse_args()
+
+print(args)
 
 # Downloading the payload
 URL = f"http://3.0.248.41:5000/get_data?student_id={args.id}"
@@ -33,8 +36,9 @@ IP_ADDRESS = args.address
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 # Sending an intent message to the server
-imessage = "ID{}".format(args.id).encode()
-sock.sendto(imessage, (IP_ADDRESS, SENDER_PORT_NO))
+intent = "ID{}".format(args.id).encode()
+sock.sendto(intent, (IP_ADDRESS, SENDER_PORT_NO))
 
-TID = sock.recvfrom(RECEIVER_PORT_NO)
-print(TID)
+while True:
+    TID = sock.recvfrom(RECEIVER_PORT_NO)
+    print(TID)
