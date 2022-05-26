@@ -72,12 +72,13 @@ class Sender:
 
             t0 = time.time()
 
+            if rate != 0:
+                self.sock.settimeout(rate)
             reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
 
             t1 = time.time()
             if rate == 0:
                 rate = t1-t0
-                self.sock.settimeout(rate)
 
             ack = reply.decode()
 
