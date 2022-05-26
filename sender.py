@@ -57,6 +57,7 @@ class Sender:
         size = len(data) // 15
         rate = 0
         seq = 0
+        last = 0
         optimal = 0
 
         while True:
@@ -83,7 +84,7 @@ class Sender:
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
             except:
-                optimal = size - 1
+                optimal = last
                 print(optimal, len(data))
                 size = optimal
                 continue
@@ -100,10 +101,11 @@ class Sender:
             if self.verifyAck(seqID, ack, packet, duration):
                 sent += size
                 if optimal == 0:
+                    last = size
                     size = int(len(data) // ((95-rate) / rate)) + seq
                 seq += 1
 
-            print(sent/len(data))
+                print(f"{sent}/{len(data)}")
 
     def verifyAck(self, seqID, ack, packet, duration):
 
