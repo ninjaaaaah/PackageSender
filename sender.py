@@ -100,7 +100,7 @@ class Sender:
             if self.verifyAck(seqID, ack, packet, duration):
                 sent += size
                 if optimal == 0:
-                    size = int(len(data) // (85 / rate)) + seq
+                    size = int(len(data) // ((95-rate) / rate)) + seq
                 seq += 1
 
             print(sent/len(data))
