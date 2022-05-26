@@ -54,13 +54,16 @@ class Sender:
     def sendPackage(self):
         data = open(f"{self.PID}.txt", "r").read()
         sent = 0
-        size = len(data) // 12
+        size = len(data) // 15
         rate = 0
         seq = 0
         streak = 0
 
         while True:
             if sent >= len(data):
+                break
+
+            if size == 0:
                 break
 
             seqID = f"{seq}".zfill(7)
