@@ -3,7 +3,6 @@ import requests
 import socket
 import argparse
 import hashlib
-import signal
 
 PID = "95b59f86"
 SENDER_PORT = 6716
@@ -49,7 +48,6 @@ class Sender:
         self.sock.sendto(intent, (self.IP_ADDRESS, self.SENDER_PORT_NO))
         data, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
         self.TID = data.decode()
-        print(f"Transaction ID: {self.TID}")
 
     def sendPackage(self):
         data = open(f"{self.PID}.txt", "r").read()
@@ -61,7 +59,9 @@ class Sender:
         last = 0
         optimal = 0
 
-        self.sock.settimeout(15)
+        print(f"Transaction ID: {self.TID} | DATA: {len(data)}")
+
+        self.sock.settimeout(20)
         while True:
             if sent >= len(data):
                 break
@@ -113,14 +113,9 @@ class Sender:
                 seq += 1
 
     def verifyAck(self, seqID, ack, packet):
-
         md5 = self.compute_checksum(packet)
         correct = f"ACK{seqID}TXN{self.TID}MD5{md5}"
-
-        if ack == correct:
-            return True
-
-        return False
+        return ack == correct
 
     def compute_checksum(self, packet):
         return hashlib.md5(packet.encode('utf-8')).hexdigest()
