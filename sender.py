@@ -74,7 +74,7 @@ class Sender:
             t0 = time.time()
 
             if rate != 0:
-                self.sock.settimeout(rate+1)
+                self.sock.settimeout(rate)
 
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
@@ -86,24 +86,25 @@ class Sender:
                 continue
 
             t1 = time.time()
+
+            duration = t1 - t0
+
             if rate == 0:
-                rate = t1-t0
+                rate = duration
 
             ack = reply.decode()
 
-            if self.verifyAck(seq, ack, packet):
+            if self.verifyAck(seq, ack, packet, duration):
                 sent += size
                 size *= 2
 
-    def verifyAck(self, seq, ack, packet):
+    def verifyAck(self, seq, ack, packet, duration):
 
         md5 = self.compute_checksum(packet)
         correct = f"ACK{seq}TXN{self.TID}MD5{md5}"
 
-        print(ack == correct)
-
         if ack == correct:
-            print(f"ACK {seq}")
+            print(f"ACK: {seq} - {duration}")
             return True
 
         return False
