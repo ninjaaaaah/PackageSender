@@ -48,6 +48,7 @@ class Sender:
         self.sock.sendto(intent, (self.IP_ADDRESS, self.SENDER_PORT_NO))
         data, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
         self.TID = data.decode()
+        print(f"Transaction ID: {self.TID}")
 
     def sendPackage(self):
         data = open(f"{self.PID}.txt", "r").read()
