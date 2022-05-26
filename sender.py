@@ -40,6 +40,6 @@ sock.bind(('', RECEIVER_PORT_NO))
 intent = "ID{}".format(args.id).encode()
 sock.sendto(intent, (IP_ADDRESS, SENDER_PORT_NO))
 
-TID = sock.recvfrom(RECEIVER_PORT_NO)
+data, addr = sock.recvfrom(RECEIVER_PORT_NO)
 
-print(TID.decode())
+print(data.decode())
