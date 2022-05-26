@@ -61,7 +61,7 @@ class Sender:
                 break
 
             seq = f"{sent}".zfill(7)
-            isLast = sent + size == len(data)
+            isLast = 1 if sent + size == len(data) else 0
 
             packet = f"ID{self.PID}SN{seq}TXN{self.TID}LAST{isLast}{data[sent:sent+size]}"
             print(packet)
