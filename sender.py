@@ -54,7 +54,8 @@ class Sender:
     def sendPackage(self):
         data = open(f"{self.PID}.txt", "r").read()
         sent = 0
-        size = len(data) // 15
+        initsize = len(data) // 15
+        size = initsize
         rate = 0
         seq = 0
         last = 0
@@ -85,7 +86,7 @@ class Sender:
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
             except:
-                if last != 0:
+                if last != 0 and last != initsize:
                     optimal = last
                     print(optimal, len(data))
                     size = optimal
