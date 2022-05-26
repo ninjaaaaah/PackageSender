@@ -81,7 +81,7 @@ class Sender:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
             except:
                 streak += 1
-                if streak == 3:
+                if streak == 2:
                     size = int(size/2)
                     streak = 0
                 continue
@@ -97,7 +97,7 @@ class Sender:
 
             if self.verifyAck(seqID, ack, packet, duration):
                 sent += size
-                size *= 2
+                size = len(data) / (120 / rate)
                 seq += 1
 
     def verifyAck(self, seqID, ack, packet, duration):
