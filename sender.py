@@ -60,7 +60,10 @@ class Sender:
             if sent == len(data):
                 break
 
-            packet = f"{data[sent:sent+size]}".encode()
+            seq = f"{sent}".zfill(7)
+
+            packet = f"ID{self.PID}SN{seq}TXN{self.TID}LAST{0}{data[sent:sent+size]}".encode(
+            )
             print(f"Message: {data[sent:sent+size]}")
 
             self.sock.sendto(
@@ -87,7 +90,6 @@ class Sender:
     def verifyAck(self, sent, ack, packet):
 
         md5 = self.compute_checksum(packet)
-        sendID = sent.zfill(7)
 
         if ack == f"ACK{sendID}TXN{self.TID}MD5{md5}".encode():
             print(f"ACK {sendID}")
