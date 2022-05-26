@@ -1,4 +1,4 @@
-from time import time
+import time
 import requests
 import socket
 import argparse
@@ -64,16 +64,16 @@ class Sender:
             self.sock.sendto(
                 packet, (self.IP_ADDRESS, self.SENDER_PORT_NO))
 
-            t0 = time.clock()
+            t0 = time.time()
             reply = b''
 
             if rate != 0:
-                while (time.clock() - t0) < rate:
+                while (time.time() - t0) < rate:
                     reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
             else:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
 
-            t1 = time.clock()
+            t1 = time.time()
             rate = t1-t0
 
             ack = reply.decode()
@@ -96,6 +96,16 @@ class Sender:
     def compute_checksum(self, packet):
         return hashlib.md5(packet.encode('utf-8')).hexdigest()
 
+
+def practiceTime():
+    t0 = time.time()
+    time.sleep(5)
+    t1 = time.time()
+    rate = t1-t0
+    print(rate)
+
+
+practiceTime()
 
 args = parseArguments()
 sender = Sender(args)
