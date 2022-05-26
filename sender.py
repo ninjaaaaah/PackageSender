@@ -61,6 +61,7 @@ class Sender:
                 break
 
             packet = f"{data[sent:sent+size]}".encode()
+            print(f"Message: {data[sent:sent+size]}")
 
             self.sock.sendto(
                 packet, (self.IP_ADDRESS, self.SENDER_PORT_NO))
@@ -97,16 +98,6 @@ class Sender:
     def compute_checksum(self, packet):
         return hashlib.md5(packet.encode('utf-8')).hexdigest()
 
-
-def practiceTime():
-    t0 = time.time()
-    time.sleep(5)
-    t1 = time.time()
-    rate = t1-t0
-    print(rate)
-
-
-practiceTime()
 
 args = parseArguments()
 sender = Sender(args)
