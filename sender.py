@@ -3,6 +3,7 @@ import requests
 import socket
 import argparse
 import hashlib
+import signal
 
 PID = "95b59f86"
 SENDER_PORT = 6716
@@ -70,17 +71,13 @@ class Sender:
                 packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
 
             t0 = time.time()
-            reply = b''
 
-            if rate != 0:
-                while (time.time() - t0) < rate:
-                    reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
-                continue
-            else:
-                reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
+            reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
 
             t1 = time.time()
-            rate = t1-t0
+            if rate == 0:
+                rate = t1-t0
+                self.sock.settimeout(rate)
 
             ack = reply.decode()
 
