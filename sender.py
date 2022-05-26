@@ -91,7 +91,7 @@ class Sender:
                     print(optimal, len(data))
                     size = optimal
                 else:
-                    size = size // 3/2
+                    size = int(size // 3/2)
                 continue
 
             t1 = time.time()
