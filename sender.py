@@ -42,4 +42,4 @@ sock.sendto(intent, (IP_ADDRESS, SENDER_PORT_NO))
 
 TID = sock.recvfrom(RECEIVER_PORT_NO)
 
-print(TID)
+print(TID.decode())
