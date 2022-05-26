@@ -60,6 +60,7 @@ class Sender:
         last = 0
         optimal = 0
 
+        self.sock.settimeout(15)
         while True:
             if sent >= len(data):
                 break
