@@ -85,9 +85,12 @@ class Sender:
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
             except:
-                optimal = last
-                print(optimal, len(data))
-                size = optimal
+                if last != 0:
+                    optimal = last
+                    print(optimal, len(data))
+                    size = optimal
+                else:
+                    size = size // 3/2
                 continue
 
             t1 = time.time()
