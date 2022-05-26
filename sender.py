@@ -1,45 +1,104 @@
+from time import time
 import requests
 import socket
 import argparse
+import hashlib
 
 PID = "95b59f86"
 SENDER_PORT = 6716
 
-# Parse command line arguments
-parser = argparse.ArgumentParser()
 
-parser.add_argument("-f", "--file", type=str,
-                    help="File to send", default=f"{PID}.txt")
-parser.add_argument("-a", "--address", type=str,
-                    help="Server IP address",  default="10.0.7.141")
-parser.add_argument("-s", "--receiver_port", type=int,
-                    help="Port number used by the receiver", default=SENDER_PORT)
-parser.add_argument("-c", "--sender_port", type=int,
-                    help="Port number used by the sender", default=9000)
-parser.add_argument("-i", "--id", type=str,
-                    help="Unique Identifier", default=PID)
+def parseArguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--file", type=str,
+                        help="File to send", default=f"{PID}.txt")
+    parser.add_argument("-a", "--address", type=str,
+                        help="Server IP address",  default="10.0.7.141")
+    parser.add_argument("-s", "--receiver_port", type=int,
+                        help="Port number used by the receiver", default=SENDER_PORT)
+    parser.add_argument("-c", "--sender_port", type=int,
+                        help="Port number used by the sender", default=9000)
+    parser.add_argument("-i", "--id", type=str,
+                        help="Unique Identifier", default=PID)
+    args = parser.parse_args()
+    print(args)
+    return args
 
-args = parser.parse_args()
 
-print(args)
+class Sender:
+    def __init__(self, args) -> None:
+        self.PID = PID
+        self.SENDER_PORT = SENDER_PORT
+        self.FILE_NAME = args.file
+        self.SENDER_PORT_NO = args.sender_port
+        self.RECEIVER_PORT_NO = args.receiver_port
+        self.IP_ADDRESS = args.address
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.bind(('', self.RECEIVER_PORT_NO))
 
-# Downloading the payload
-URL = f"http://3.0.248.41:5000/get_data?student_id={args.id}"
-response = requests.get(URL)
-open(args.file, "wb").write(response.content)
+    # Downloading the payload
+    def downloadPackage(self):
+        URL = f"http://3.0.248.41:5000/get_data?student_id={self.PID}"
+        response = requests.get(URL)
+        open(self.FILE_NAME, "wb").write(response.content)
 
-# Establishing a UDP connection with the server
-SENDER_PORT_NO = args.sender_port
-RECEIVER_PORT_NO = args.receiver_port
-IP_ADDRESS = args.address
+    # Sending an Intent Message
+    def sendIntentMessage(self):
+        intent = f"ID{self.PID}".encode()
+        self.sock.sendto(intent, (self.IP_ADDRESS, self.SENDER_PORT_NO))
+        data, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
+        self.TID = data.decode()
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind(('', RECEIVER_PORT_NO))
+    def sendPackage(self):
+        data = open(f"{self.PID}.txt", "r").read()
+        sent = 0
+        size = 1
+        rate = 0
 
-# Sending an intent message to the server
-intent = "ID{}".format(args.id).encode()
-sock.sendto(intent, (IP_ADDRESS, SENDER_PORT_NO))
+        while True:
+            if sent == len(data):
+                break
 
-data, addr = sock.recvfrom(RECEIVER_PORT_NO)
+            packet = f"{data[sent:sent+size]}".encode()
 
-print(data.decode())
+            self.sock.sendto(
+                packet, (self.IP_ADDRESS, self.SENDER_PORT_NO))
+
+            t0 = time.clock()
+            reply = b''
+
+            if rate != 0:
+                while (time.clock() - t0) < rate:
+                    reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
+            else:
+                reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
+
+            t1 = time.clock()
+            rate = t1-t0
+
+            ack = reply.decode()
+
+            if self.verifyAck(sent, ack, packet):
+                sent += size
+                size *= 2
+
+    def verifyAck(self, sent, ack, packet):
+
+        md5 = self.compute_checksum(packet)
+        sendID = sent.zfill(7)
+
+        if ack == f"ACK{sendID}TXN{self.TID}MD5{md5}".encode():
+            print(f"ACK {sendID}")
+            return True
+
+        return False
+
+    def compute_checksum(self, packet):
+        return hashlib.md5(packet.encode('utf-8')).hexdigest()
+
+
+args = parseArguments()
+sender = Sender(args)
+sender.downloadPackage()
+sender.sendIntentMessage()
+sender.sendPackage()
