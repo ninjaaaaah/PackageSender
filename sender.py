@@ -57,7 +57,6 @@ class Sender:
         size = len(data) // 15
         rate = 0
         seq = 0
-        streak = 0
         optimal = 0
 
         while True:
@@ -84,11 +83,9 @@ class Sender:
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
             except:
-                streak += 1
-                if streak == 2:
-                    optimal = size - 1
-                    size = optimal
-                    streak = 0
+                optimal = size - 1
+                print(optimal, len(data))
+                size = optimal
                 continue
 
             t1 = time.time()
@@ -105,6 +102,8 @@ class Sender:
                 if optimal == 0:
                     size = int(len(data) // (85 / rate)) + seq
                 seq += 1
+
+            print(sent/len(data))
 
     def verifyAck(self, seqID, ack, packet, duration):
 
