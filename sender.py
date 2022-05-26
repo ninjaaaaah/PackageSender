@@ -62,13 +62,12 @@ class Sender:
 
             seq = f"{sent}".zfill(7)
 
-            packet = f"ID{self.PID}SN{seq}TXN{self.TID}LAST{0}{data[sent:sent+size]}".encode(
-            )
+            packet = f"ID{self.PID}SN{seq}TXN{self.TID}LAST{0}{data[sent:sent+size]}"
             print(
                 f"Message: ID{self.PID}SN{seq}TXN{self.TID}LAST{0}{data[sent:sent+size]}")
 
             self.sock.sendto(
-                packet, (self.IP_ADDRESS, self.SENDER_PORT_NO))
+                packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
 
             t0 = time.time()
             reply = b''
@@ -84,16 +83,16 @@ class Sender:
 
             ack = reply.decode()
 
-            if self.verifyAck(sent, ack, packet):
+            if self.verifyAck(seq, ack, packet):
                 sent += size
                 size *= 2
 
-    def verifyAck(self, sent, ack, packet):
+    def verifyAck(self, seq, ack, packet):
 
         md5 = self.compute_checksum(packet)
 
-        if ack == f"ACK{sendID}TXN{self.TID}MD5{md5}".encode():
-            print(f"ACK {sendID}")
+        if ack == f"ACK{seq}TXN{self.TID}MD5{md5}".encode():
+            print(f"ACK {seq}")
             return True
 
         return False
@@ -106,4 +105,5 @@ args = parseArguments()
 sender = Sender(args)
 sender.downloadPackage()
 sender.sendIntentMessage()
-sender.sendPackage()
+if sender.TID != "Existing alive connection":
+    sender.sendPackage()
