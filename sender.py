@@ -58,6 +58,7 @@ class Sender:
         rate = 0
         seq = 0
         streak = 0
+        optimal = 0
 
         while True:
             if sent >= len(data):
@@ -85,7 +86,8 @@ class Sender:
             except:
                 streak += 1
                 if streak == 2:
-                    size = int(size/2)
+                    optimal = size - 1
+                    size = optimal
                     streak = 0
                 continue
 
@@ -100,7 +102,8 @@ class Sender:
 
             if self.verifyAck(seqID, ack, packet, duration):
                 sent += size
-                size = int(len(data) // (85 / rate)) + seq
+                if optimal == 0:
+                    size = int(len(data) // (85 / rate)) + seq
                 seq += 1
 
     def verifyAck(self, seqID, ack, packet, duration):
