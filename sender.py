@@ -60,7 +60,7 @@ class Sender:
         streak = 0
 
         while True:
-            if sent == len(data):
+            if sent >= len(data):
                 break
 
             seqID = f"{seq}".zfill(7)
@@ -97,7 +97,7 @@ class Sender:
 
             if self.verifyAck(seqID, ack, packet, duration):
                 sent += size
-                size = int(len(data) // (90 / rate))
+                size = int(len(data) // (85 / rate))
                 seq += 1
 
     def verifyAck(self, seqID, ack, packet, duration):
