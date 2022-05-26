@@ -86,6 +86,7 @@ class Sender:
             if self.verifyAck(seq, ack, packet):
                 sent += size
                 size *= 2
+                seq += 1
 
     def verifyAck(self, seq, ack, packet):
 
