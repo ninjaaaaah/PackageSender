@@ -34,11 +34,10 @@ RECEIVER_PORT_NO = args.receiver_port
 IP_ADDRESS = args.address
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.bind(('', RECEIVER_PORT_NO))
 
 # Sending an intent message to the server
 intent = "ID{}".format(args.id).encode()
 sock.sendto(intent, (IP_ADDRESS, SENDER_PORT_NO))
 
-while True:
-    TID = sock.recvfrom(RECEIVER_PORT_NO)
-    print(TID)
+TID = sock.recvfrom(RECEIVER_PORT_NO)
