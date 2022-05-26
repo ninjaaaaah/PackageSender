@@ -64,7 +64,8 @@ class Sender:
 
             packet = f"ID{self.PID}SN{seq}TXN{self.TID}LAST{0}{data[sent:sent+size]}".encode(
             )
-            print(f"Message: {data[sent:sent+size]}")
+            print(
+                f"Message: ID{self.PID}SN{seq}TXN{self.TID}LAST{0}{data[sent:sent+size]}")
 
             self.sock.sendto(
                 packet, (self.IP_ADDRESS, self.SENDER_PORT_NO))
