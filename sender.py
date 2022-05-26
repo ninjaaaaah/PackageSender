@@ -86,13 +86,15 @@ class Sender:
             if self.verifyAck(seq, ack, packet):
                 sent += size
                 size *= 2
-                seq += 1
 
     def verifyAck(self, seq, ack, packet):
 
         md5 = self.compute_checksum(packet)
+        correct = f"ACK{seq}TXN{self.TID}MD5{md5}"
 
-        if ack == f"ACK{seq}TXN{self.TID}MD5{md5}".encode():
+        print(ack, correct)
+
+        if ack is correct:
             print(f"ACK {seq}")
             return True
 
@@ -106,5 +108,5 @@ args = parseArguments()
 sender = Sender(args)
 sender.downloadPackage()
 sender.sendIntentMessage()
-if sender.TID != "Existing alive connection":
+if sender.TID != "Existing alive transaction":
     sender.sendPackage()
