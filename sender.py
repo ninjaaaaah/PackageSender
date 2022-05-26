@@ -97,7 +97,7 @@ class Sender:
 
             if self.verifyAck(seqID, ack, packet, duration):
                 sent += size
-                size = int(len(data) // (120 / rate))
+                size = int(len(data) // (90 / rate))
                 seq += 1
 
     def verifyAck(self, seqID, ack, packet, duration):
