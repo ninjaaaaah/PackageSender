@@ -81,7 +81,7 @@ class Sender:
             except:
                 streak += 1
                 if streak == 3:
-                    size /= 2
+                    size = int(size/2)
                     streak = 0
                 continue
 
