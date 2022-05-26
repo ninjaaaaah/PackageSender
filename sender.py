@@ -61,10 +61,10 @@ class Sender:
                 break
 
             seq = f"{sent}".zfill(7)
+            isLast = sent + size == len(data)
 
-            packet = f"ID{self.PID}SN{seq}TXN{self.TID}LAST{0}{data[sent:sent+size]}"
-            print(
-                f"Message: ID{self.PID}SN{seq}TXN{self.TID}LAST{0}{data[sent:sent+size]}")
+            packet = f"ID{self.PID}SN{seq}TXN{self.TID}LAST{isLast}{data[sent:sent+size]}"
+            print(packet)
 
             self.sock.sendto(
                 packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
