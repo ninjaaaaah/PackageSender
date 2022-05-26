@@ -54,7 +54,7 @@ class Sender:
     def sendPackage(self):
         data = open(f"{self.PID}.txt", "r").read()
         sent = 0
-        size = 1
+        size = len(data) // 12
         rate = 0
         seq = 0
         streak = 0
@@ -64,7 +64,7 @@ class Sender:
                 break
 
             seqID = f"{seq}".zfill(7)
-            isLast = 1 if sent + size == len(data) else 0
+            isLast = 1 if sent + size >= len(data) else 0
 
             packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{data[sent:sent+size]}"
             print(packet)
