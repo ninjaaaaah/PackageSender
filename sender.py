@@ -74,7 +74,11 @@ class Sender:
 
             if rate != 0:
                 self.sock.settimeout(rate)
-            reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
+
+            try:
+                reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
+            except:
+                continue
 
             t1 = time.time()
             if rate == 0:
