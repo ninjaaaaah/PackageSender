@@ -56,16 +56,17 @@ class Sender:
         sent = 0
         size = 1
         rate = 0
+        seq = 0
         streak = 0
 
         while True:
             if sent == len(data):
                 break
 
-            seq = f"{sent}".zfill(7)
+            seqID = f"{seq}".zfill(7)
             isLast = 1 if sent + size == len(data) else 0
 
-            packet = f"ID{self.PID}SN{seq}TXN{self.TID}LAST{isLast}{data[sent:sent+size]}"
+            packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{data[sent:sent+size]}"
             print(packet)
 
             self.sock.sendto(
@@ -94,17 +95,18 @@ class Sender:
 
             ack = reply.decode()
 
-            if self.verifyAck(seq, ack, packet, duration):
+            if self.verifyAck(seqID, ack, packet, duration):
                 sent += size
                 size *= 2
+                seq += 1
 
-    def verifyAck(self, seq, ack, packet, duration):
+    def verifyAck(self, seqID, ack, packet, duration):
 
         md5 = self.compute_checksum(packet)
-        correct = f"ACK{seq}TXN{self.TID}MD5{md5}"
+        correct = f"ACK{seqID}TXN{self.TID}MD5{md5}"
 
         if ack == correct:
-            print(f"ACK: {seq} - {duration}")
+            print(f"ACK: {seqID} - {duration}")
             return True
 
         return False
