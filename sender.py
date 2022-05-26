@@ -75,6 +75,7 @@ class Sender:
             if rate != 0:
                 while (time.time() - t0) < rate:
                     reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
+                continue
             else:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
 
@@ -92,9 +93,9 @@ class Sender:
         md5 = self.compute_checksum(packet)
         correct = f"ACK{seq}TXN{self.TID}MD5{md5}"
 
-        print(ack, correct)
+        print(ack == correct)
 
-        if ack is correct:
+        if ack == correct:
             print(f"ACK {seq}")
             return True
 
