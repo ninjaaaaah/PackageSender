@@ -96,6 +96,7 @@ class Sender:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
 
             except KeyboardInterrupt:
+                print("\n  OPTIMAL VALUE FOUND ")
                 optimal = last
                 size = last
 
@@ -107,6 +108,10 @@ class Sender:
                 #     size = optimal
                 # else:
                 #     size = int(size // (5/2))
+
+                optimal = last
+                size = last
+
                 print(
                     f"{colors.NON}  NON | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent}/{len(data)}{colors.END}")
                 elapsed += duration
