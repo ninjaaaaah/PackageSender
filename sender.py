@@ -152,7 +152,7 @@ class Sender:
 
         color = colors.ACK if elapsed < 95 else colors.NON if elapsed < 100 else colors.ERR
         print(
-            f"Transaction ID: {self.TID} | {color}{'SUCCESS' if done else 'FAIL'}{colors.END} | TIME: {color}{elapsed:.2f}{colors.END}")
+            f"Transaction ID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | {color}{'SUCCESS' if done else 'FAIL'}{colors.END} | TIME: {color}{elapsed:.2f}{colors.END}")
 
     def verifyAck(self, seqID, ack, packet):
         md5 = self.compute_checksum(packet)
@@ -178,7 +178,7 @@ args = parseArguments()
 sender = Sender(args)
 sender.sendIntentMessage()
 if sender.TID != "Existing alive transaction":
-    # sender.downloadPackage()
+    sender.downloadPackage()
     sender.sendPackage()
     sender.waitEnd()
 else:
