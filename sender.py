@@ -79,14 +79,11 @@ class Sender:
 
         self.sock.settimeout(15)
         while True:
+            if time.time() - self.timer > 120:
+                break
+
             if sent >= len(data):
                 done = True
-                break
-
-            if size == 0:
-                break
-
-            if time.time() - self.timer > 120:
                 break
 
             seqID = f"{seq}".zfill(7)
