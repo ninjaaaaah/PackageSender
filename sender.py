@@ -73,7 +73,7 @@ class Sender:
             isLast = 1 if sent + size >= len(data) else 0
 
             packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{data[sent:sent+size]}"
-            print(f"{seqID} | LEN: {str(size).zfill(3)} | ", end="")
+            print(f"\t{seqID} | LEN: {str(size).zfill(3)} | ", end="")
 
             self.sock.sendto(
                 packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
