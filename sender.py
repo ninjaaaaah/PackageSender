@@ -82,6 +82,7 @@ class Sender:
             t0 = time.time()
 
             if rate != 0:
+                print("rate set")
                 self.sock.settimeout(rate)
 
             try:
@@ -111,6 +112,7 @@ class Sender:
 
             if rate == 0:
                 rate = duration
+                print("rate found")
 
             ack = reply.decode()
 
