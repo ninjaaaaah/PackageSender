@@ -93,7 +93,7 @@ class Sender:
                 else:
                     size = int(size // 3/2)
                 print(
-                    F"NON | DUR: {str(round(duration,2)).zfill(4)} | COM: {sent}/{len(data)}")
+                    F"NON | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent}/{len(data)}")
                 continue
 
             t1 = time.time()
@@ -111,11 +111,11 @@ class Sender:
                     last = size
                     size = int(len(data) // ((95-rate) / rate)) + seq
                 print(
-                    f"ACK | DUR: {str(round(duration,2)).zfill(4)} | COM: {sent}/{len(data)}")
+                    f"ACK | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent}/{len(data)}")
                 seq += 1
             else:
                 print(
-                    f"ERR | DUR: {str(round(duration,2)).zfill(4)} | COM: {sent}/{len(data)}")
+                    f"ERR | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent}/{len(data)}")
 
     def verifyAck(self, seqID, ack, packet):
         md5 = self.compute_checksum(packet)
