@@ -21,7 +21,6 @@ def parseArguments():
     parser.add_argument("-i", "--id", type=str,
                         help="Unique Identifier", default=PID)
     args = parser.parse_args()
-    print(args)
     return args
 
 
@@ -73,7 +72,7 @@ class Sender:
             isLast = 1 if sent + size >= len(data) else 0
 
             packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{data[sent:sent+size]}"
-            print(f"{seqID} | LEN:\t{str(size).zfill(3)} | ", end="")
+            print(f"{seqID} | LEN: {str(size).zfill(3)} | ", end="")
 
             self.sock.sendto(
                 packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
@@ -111,8 +110,8 @@ class Sender:
                 if optimal == 0:
                     last = size
                     size = int(len(data) // ((95-rate) / rate)) + seq
-                    print(
-                        f"ACK | DUR: {round(duration,2)} | COM: {sent}/{len(data)}")
+                print(
+                    f"ACK | DUR: {round(duration,2)} | COM: {sent}/{len(data)}")
                 seq += 1
             else:
                 print(
