@@ -73,6 +73,7 @@ class Sender:
         cons = 0
         prev = None
         done = False
+        target = 90
 
         print(
             f"TID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | DATA: {len(data)}")
@@ -139,11 +140,12 @@ class Sender:
                         f"{colors.ERR}  ERR | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
 
                 elapsed += duration
+                target = target if elapsed < target else 120
                 sent += size
 
                 last = size
                 size = max(math.ceil((len(data)-sent) /
-                                     math.ceil((90-elapsed) / math.floor(rate+1))), last)
+                                     math.ceil((target-elapsed) / math.floor(rate+1))), last)
                 size = size if size < limit else (last+limit) // 2
                 prev = seq
                 seq += 1
