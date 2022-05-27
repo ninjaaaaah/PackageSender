@@ -119,7 +119,7 @@ class Sender:
                 size = max(min(int(size * 0.5), size-1), last)
 
                 print(
-                    f"{colors.NON}  NON | LEN: {size:2} | DUR: {duration:5.2f} | COM: {sent}/{len(data)}{colors.END}")
+                    f"{colors.NON}  NON | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}")
                 elapsed += duration
                 cons += 1
                 if cons == 5:
