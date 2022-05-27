@@ -169,12 +169,11 @@ class Sender:
         return hashlib.md5(packet.encode('utf-8')).hexdigest()
 
     def waitEnd(self):
-        print()
         while True:
             remaining = 130 - (time.time() - self.timer)
-            print("\033[A                             \033[A")
             print(
                 f"{remaining:.2f}s | [{('█'*int(math.ceil(remaining/120 *10))).ljust(10)}]")
+            print("\033[A                             \033[A")
             if remaining <= 0:
                 break
         print("Terminated successfully.")
