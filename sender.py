@@ -82,7 +82,7 @@ class Sender:
             isLast = 1 if sent + size >= len(data) else 0
 
             packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{data[sent:sent+size]}"
-            print(f" {seqID}:") if prev != seq else None
+            print(f" {seqID} | SIZE {size}:") if prev != seq else None
 
             self.sock.sendto(
                 packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
@@ -142,7 +142,7 @@ class Sender:
                 if optimal == 0:
                     last = size
                     size = int((len(data)-sent) //
-                               int(95-elapsed / rate))
+                               int((95-elapsed) / rate))
                 prev = seq
                 seq += 1
                 elapsed += duration
