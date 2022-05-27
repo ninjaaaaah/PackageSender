@@ -110,9 +110,6 @@ class Sender:
                 else:
                     size = min(int(size * 0.9), size)
 
-                optimal = last
-                size = last
-
                 print(
                     f"{colors.NON}  NON | DUR: {duration:5.2f} | COM: {sent}/{len(data)}{colors.END}")
                 elapsed += duration
