@@ -22,6 +22,8 @@ def parseArguments():
                         help="Port number used by the sender", default=9000)
     parser.add_argument("-i", "--id", type=str,
                         help="Unique Identifier", default=PID)
+    parser.add_argument("-t", "--testcases", type=str,
+                        help="Number of Testcases", default=1)
     args = parser.parse_args()
     return args
 
@@ -65,15 +67,13 @@ class Sender:
         self.file = open(f"{self.PID}.txt", "r")
         data = self.file.read()
         sent = 0
-        initsize = 1
-        size = initsize
+        size = 1
         rate = 0
         seq = 0
         last = 0
         limit = len(data)
         elapsed = 0
         cons = 0
-        prev = None
         done = False
         target = 90
         status = None
@@ -187,7 +187,7 @@ class Sender:
 
 args = parseArguments()
 sender = Sender(args)
-for i in range(5):
+for i in range(args.testcases):
     sender.downloadPackage()
     sender.sendIntentMessage()
     if sender.TID != "Existing alive transaction":
