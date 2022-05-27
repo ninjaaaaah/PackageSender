@@ -108,7 +108,7 @@ class Sender:
                     optimal = last
                     size = optimal
                 else:
-                    size = int(size * 0.9)
+                    size = min(int(size * 0.9), size)
 
                 optimal = last
                 size = last
