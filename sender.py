@@ -142,8 +142,8 @@ class Sender:
                 sent += size
                 if optimal == 0:
                     last = size
-                    size = math.ceil((len(data)-sent) /
-                                     ((90-elapsed) / rate))
+                    size = max(math.ceil((len(data)-sent) /
+                                         ((90-elapsed) / rate)), size)
                 prev = seq
                 seq += 1
                 elapsed += duration
