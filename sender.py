@@ -86,6 +86,30 @@ class Sender:
 
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
+
+                cons = 0
+                t1 = time.time()
+
+                duration = t1 - t0
+
+                if rate == 0:
+                    rate = duration
+
+                ack = reply.decode()
+
+                if self.verifyAck(seqID, ack, packet):
+                    print(
+                        f"  ACK | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}")
+                else:
+                    print(
+                        f"  ERR | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}")
+
+                sent += size
+                if optimal == 0:
+                    last = size
+                    size = int(len(data) // ((95-rate) / rate)) + int(1.2*seq)
+                seq += 1
+                elapsed += duration
             except:
                 t1 = time.time()
                 duration = t1 - t0
@@ -102,31 +126,6 @@ class Sender:
                     break
 
                 continue
-
-            cons = 0
-
-            t1 = time.time()
-
-            duration = t1 - t0
-
-            if rate == 0:
-                rate = duration
-
-            ack = reply.decode()
-
-            if self.verifyAck(seqID, ack, packet):
-                print(
-                    f"  ACK | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}")
-            else:
-                print(
-                    f"  ERR | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}")
-
-            sent += size
-            if optimal == 0:
-                last = size
-                size = int(len(data) // ((95-rate) / rate)) + int(1.2*seq)
-            seq += 1
-            elapsed += duration
 
         print(
             f"Transaction ID: {self.TID} | DATA: {len(data)} | TIME: {round(elapsed,2)}")
