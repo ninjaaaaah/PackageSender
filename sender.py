@@ -106,7 +106,7 @@ class Sender:
 
                 limit = size
 
-                size = min(int(size * 0.95), size)
+                size = min(int(size * 0.95), size-1)
 
                 print(
                     f"{colors.NON}  NON | DUR: {duration:5.2f} | COM: {sent}/{len(data)}{colors.END}")
@@ -138,7 +138,7 @@ class Sender:
 
                 last = size
                 size = max(math.ceil((len(data)-sent) /
-                                     ((90-elapsed) / rate)), last)
+                                     ((93-elapsed) / rate)), last)
                 size = size if size < limit else (last+limit) // 2
                 prev = seq
                 seq += 1
