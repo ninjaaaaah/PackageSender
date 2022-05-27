@@ -95,14 +95,17 @@ class Sender:
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
 
+            except KeyboardInterrupt:
+                size = last - 1
+
             except:
                 t1 = time.time()
                 duration = t1 - t0
-                if last != 0 and last != initsize:
-                    optimal = last
-                    size = optimal
-                else:
-                    size = int(size // (5/2))
+                # if last != 0 and last != initsize:
+                #     optimal = last
+                #     size = optimal
+                # else:
+                #     size = int(size // (5/2))
                 print(
                     f"{colors.NON}  NON | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent}/{len(data)}{colors.END}")
                 elapsed += duration
