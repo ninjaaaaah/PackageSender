@@ -114,7 +114,6 @@ class Sender:
                     rate = duration
 
                 ack = reply.decode()
-                print(ack)
 
                 if self.verifyAck(seqID, ack, packet):
                     print(
@@ -122,6 +121,8 @@ class Sender:
                 else:
                     print(
                         f"  ERR | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}")
+
+                print(f"  - {ack}")
 
                 sent += size
                 if optimal == 0:
