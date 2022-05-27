@@ -184,12 +184,13 @@ class Sender:
 
 
 args = parseArguments()
-sender = Sender(args)
-sender.downloadPackage()
-sender.sendIntentMessage()
-if sender.TID != "Existing alive transaction":
-    sender.sendPackage()
-    sender.waitEnd()
-    sender.log()
-else:
-    print("Existing alive transaction")
+for i in range(5):
+    sender = Sender(args)
+    sender.downloadPackage()
+    sender.sendIntentMessage()
+    if sender.TID != "Existing alive transaction":
+        sender.sendPackage()
+        sender.waitEnd()
+        sender.log()
+    else:
+        print("Existing alive transaction")
