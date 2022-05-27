@@ -149,7 +149,7 @@ class Sender:
         print(
             f"Transaction ID: {self.TID} | DATA: {len(data)} | TIME: {color}{elapsed:.2f}{colors.END}")
         while 120 - (start - time.time()) > 0:
-            pass
+            print(120 - (start - time.time()))
         print("Terminated successfully.")
 
     def verifyAck(self, seqID, ack, packet):
