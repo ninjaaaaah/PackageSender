@@ -104,11 +104,8 @@ class Sender:
             except:
                 t1 = time.time()
                 duration = t1 - t0
-                if last != 0 and last != initsize:
-                    optimal = last
-                    size = optimal
-                else:
-                    size = min(int(size * 0.9), size)
+
+                size = min(int(size * 0.9), size)
 
                 print(
                     f"{colors.NON}  NON | DUR: {duration:5.2f} | COM: {sent}/{len(data)}{colors.END}")
@@ -137,10 +134,10 @@ class Sender:
                         f"{colors.ERR}  ERR | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
 
                 sent += size
-                if optimal == 0:
-                    last = size
-                    size = max(math.ceil((len(data)-sent) /
-                                         ((90-elapsed) / rate)), size)
+
+                last = size
+                size = max(math.ceil((len(data)-sent) /
+                                     ((90-elapsed) / rate)), size)
                 prev = seq
                 seq += 1
                 elapsed += duration
