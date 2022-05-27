@@ -58,6 +58,7 @@ class Sender:
         last = 0
         optimal = 0
         elapsed = 0
+        cons = 0
 
         print(f"Transaction ID: {self.TID} | DATA: {len(data)}")
 
@@ -96,7 +97,9 @@ class Sender:
                 print(
                     F"LEN: {str(size).zfill(3)} | NON | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent}/{len(data)}")
                 elapsed += duration
-
+                cons += 1
+                if cons == 3:
+                    break
                 continue
 
             t1 = time.time()
