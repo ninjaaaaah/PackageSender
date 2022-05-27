@@ -169,7 +169,7 @@ class Sender:
     def waitEnd(self):
         print()
         while True:
-            remaining = 125 - (time.time() - self.timer)
+            remaining = 130 - (time.time() - self.timer)
             print("\033[A                             \033[A")
             print(
                 f"{remaining:.2f}s | [{('█'*int(math.ceil(remaining/120 *10))).ljust(10)}]")
