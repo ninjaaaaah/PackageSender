@@ -139,7 +139,7 @@ class Sender:
                 last = size
                 size = max(math.ceil((len(data)-sent) /
                                      ((90-elapsed) / rate)), last)
-                size = size if size < limit else last
+                size = size if size < limit else (last+limit) // 2
                 prev = seq
                 seq += 1
                 elapsed += duration
