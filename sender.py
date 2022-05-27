@@ -90,13 +90,11 @@ class Sender:
                 duration = t1 - t0
                 if last != 0 and last != initsize:
                     optimal = last
-                    print(
-                        F"NON | DUR: {round(duration,2)} | COM:\t{sent}/{len(data)}")
                     size = optimal
                 else:
-                    print(
-                        F"NON | DUR: {round(duration,2)} | COM:\t{sent}/{len(data)}")
                     size = int(size // 3/2)
+                print(
+                    F"NON | DUR: {round(duration,2)} | COM: {sent}/{len(data)}")
                 continue
 
             t1 = time.time()
@@ -114,11 +112,11 @@ class Sender:
                     last = size
                     size = int(len(data) // ((95-rate) / rate)) + seq
                     print(
-                        f"ACK | DUR: {round(duration,2)} | COM:\t{sent}/{len(data)}")
+                        f"ACK | DUR: {round(duration,2)} | COM: {sent}/{len(data)}")
                 seq += 1
             else:
                 print(
-                    f"ERR | DUR: {round(duration,2)} | COM:\t{sent}/{len(data)}")
+                    f"ERR | DUR: {round(duration,2)} | COM: {sent}/{len(data)}")
 
     def verifyAck(self, seqID, ack, packet):
         md5 = self.compute_checksum(packet)
