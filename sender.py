@@ -69,12 +69,14 @@ class Sender:
         elapsed = 0
         cons = 0
         prev = None
+        done = False
 
         print(f"Transaction ID: {self.TID} | DATA: {len(data)}")
 
         self.sock.settimeout(15)
         while True:
             if sent >= len(data):
+                done = True
                 break
 
             if size == 0:
@@ -147,7 +149,7 @@ class Sender:
 
         color = colors.ACK if elapsed < 95 else colors.NON if elapsed < 100 else colors.ERR
         print(
-            f"Transaction ID: {self.TID} | DATA: {len(data)} | TIME: {color}{elapsed:.2f}{colors.END}")
+            f"Transaction ID: {self.TID} | {color}{'SUCCESS' if done else 'FAIL'}{colors.END} | TIME: {color}{elapsed:.2f}{colors.END}")
 
     def verifyAck(self, seqID, ack, packet):
         md5 = self.compute_checksum(packet)
@@ -165,7 +167,7 @@ class Sender:
                 break
             print("\033[A                             \033[A")
             print(
-                f"{120 - (time.time() - self.timer):.2f}s | [{('█'*int(math.floor(remaining/120 *10))).ljust(10)}]")
+                f"{120 - (time.time() - self.timer):.2f}s | [{('█'*int(math.ceil(remaining/120 *10))).ljust(10)}]")
         print("Terminated successfully.")
 
 
