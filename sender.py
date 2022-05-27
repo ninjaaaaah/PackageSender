@@ -152,7 +152,8 @@ class Sender:
 
         color = colors.ACK if elapsed < 95 else colors.NON if elapsed < 100 else colors.ERR
         status = 'SUCCESS' if done else 'FAIL'
-        self.result = f"TID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | {color}{status}{colors.END} | TIME: {color}{elapsed:.2f}{colors.END}"
+        code = colors.ACK if done else colors.ERR
+        self.result = f"TID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | {code}{status}{colors.END} | TIME: {color}{elapsed:.2f}{colors.END}"
         print(self.result)
 
     def verifyAck(self, seqID, ack, packet):
