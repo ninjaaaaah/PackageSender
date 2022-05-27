@@ -113,7 +113,7 @@ class Sender:
                     f"{colors.NON}  NON | LEN: {size} | DUR: {duration:5.2f} | COM: {sent}/{len(data)}{colors.END}")
                 elapsed += duration
                 cons += 1
-                if cons == 3:
+                if cons == 5:
                     break
                 prev = seq
 
