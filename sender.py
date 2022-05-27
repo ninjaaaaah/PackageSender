@@ -156,7 +156,7 @@ class Sender:
                 break
             print("\033[A                             \033[A")
             print(
-                f"{120 - (time.time() - start):.2f}s | [{('█'*int(10 - (120//remaining))).ljust(10)}]")
+                f"{120 - (time.time() - start):.2f}s | [{('█'*int(10 - math.ceil(120/remaining))).ljust(10)}]")
         print("Terminated successfully.")
 
     def verifyAck(self, seqID, ack, packet):
