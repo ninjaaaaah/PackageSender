@@ -126,8 +126,6 @@ class Sender:
                 if cons == 3:
                     break
 
-                continue
-
         print(
             f"Transaction ID: {self.TID} | DATA: {len(data)} | TIME: {round(elapsed,2)}")
 
