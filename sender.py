@@ -92,7 +92,7 @@ class Sender:
                     optimal = last
                     size = optimal
                 else:
-                    size = int(size // 3/2)
+                    size = int(size // (5/2))
                 print(
                     F"LEN: {str(size).zfill(3)} | NON | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent}/{len(data)}")
                 elapsed += duration
