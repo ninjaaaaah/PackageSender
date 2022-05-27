@@ -129,8 +129,7 @@ class Sender:
 
                 duration = t1 - t0
 
-                if rate == 0:
-                    rate = math.floor(duration) + 1
+                rate = (rate + duration) / 2
 
                 ack = reply.decode()
 
@@ -146,7 +145,7 @@ class Sender:
 
                 last = size
                 size = max(math.ceil((len(data)-sent) /
-                                     ((93-elapsed) / rate)), last)
+                                     ((93-elapsed) / math.floor(rate+1))), last)
                 size = size if size < limit else (last+limit) // 2
                 prev = seq
                 seq += 1
