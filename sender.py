@@ -98,12 +98,13 @@ class Sender:
 
             except KeyboardInterrupt:
                 print("\n  OPTIMAL VALUE FOUND ")
-                optimal = last
                 size = last
 
             except:
                 t1 = time.time()
                 duration = t1 - t0
+
+                limit = size
 
                 size = min(int(size * 0.9), size)
 
