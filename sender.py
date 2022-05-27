@@ -102,7 +102,6 @@ class Sender:
                     break
 
                 continue
-                continue
 
             cons = 0
 
