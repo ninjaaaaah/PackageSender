@@ -141,7 +141,8 @@ class Sender:
                 sent += size
                 if optimal == 0:
                     last = size
-                    size = int((len(data)-sent) // int(95 / rate)) + int(2*seq)
+                    size = int((len(data)-sent) //
+                               int(95-elapsed / rate))
                 prev = seq
                 seq += 1
                 elapsed += duration
