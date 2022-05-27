@@ -102,6 +102,7 @@ class Sender:
                     break
 
                 continue
+                continue
 
             cons = 0
 
@@ -117,15 +118,15 @@ class Sender:
             if self.verifyAck(seqID, ack, packet):
                 print(
                     f"ACK | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}")
-                sent += size
-                if optimal == 0:
-                    last = size
-                    size = int(len(data) // ((95-rate) / rate)) + int(1.2*seq)
-                seq += 1
             else:
                 print(
                     f"ERR | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}")
 
+            sent += size
+            if optimal == 0:
+                last = size
+                size = int(len(data) // ((95-rate) / rate)) + int(1.2*seq)
+            seq += 1
             elapsed += duration
 
         print(
