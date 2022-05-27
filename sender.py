@@ -1,4 +1,3 @@
-from os import path
 import math
 import time
 import requests
@@ -152,8 +151,7 @@ class Sender:
             finally:
                 print("\033[A                             \033[A")
                 print(status)
-                open(path.relpath(
-                    f"transactions/{self.TID}.log"), "a").write(status)
+                open(f"transactions/{self.TID}.log", "a").write(status)
 
         elapsed = time.time() - self.timer
         color = colors.ACK if elapsed < 95 else colors.NON if elapsed < 100 else colors.ERR
