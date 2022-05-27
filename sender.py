@@ -1,4 +1,5 @@
 import math
+import sys
 import time
 import requests
 import socket
@@ -152,8 +153,8 @@ class Sender:
 
         color = colors.ACK if elapsed < 95 else colors.NON if elapsed < 100 else colors.ERR
         status = 'SUCCESS' if done else 'FAIL'
-        print(
-            f"Transaction ID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | {color}{status}{colors.END} | TIME: {color}{elapsed:.2f}{colors.END}")
+        self.result = f"Transaction ID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | {color}{status}{colors.END} | TIME: {color}{elapsed:.2f}{colors.END}"
+        print(self.result)
 
     def verifyAck(self, seqID, ack, packet):
         md5 = self.compute_checksum(packet)
@@ -174,6 +175,12 @@ class Sender:
                 break
         print("Terminated successfully.")
 
+    def log(self):
+        with open('log.txt', 'w') as f:
+            sys.stdout = f
+            print(self.result)
+            sys.stdout = sys.stdout
+
 
 args = parseArguments()
 sender = Sender(args)
@@ -182,5 +189,6 @@ sender.sendIntentMessage()
 if sender.TID != "Existing alive transaction":
     sender.sendPackage()
     sender.waitEnd()
+    sender.log()
 else:
     print("Existing alive transaction")
