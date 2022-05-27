@@ -30,6 +30,8 @@ class colors:
     NON = '\033[93m'
     ERR = '\033[91m'
     END = '\033[0m'
+    INF = '\033[94m'
+    EMP = '\033[1m'
 
 
 class Sender:
@@ -71,7 +73,8 @@ class Sender:
         prev = None
         done = False
 
-        print(f"Transaction ID: {self.TID} | DATA: {len(data)}")
+        print(
+            f"Transaction ID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | DATA: {len(data)}")
 
         self.sock.settimeout(15)
         while True:
