@@ -72,6 +72,7 @@ class Sender:
         print(f"Transaction ID: {self.TID} | DATA: {len(data)}")
 
         self.sock.settimeout(15)
+        start = time.time()
         while True:
             if sent >= len(data):
                 break
@@ -147,6 +148,9 @@ class Sender:
         color = colors.ACK if elapsed < 95 else colors.NON if elapsed < 100 else colors.ERR
         print(
             f"Transaction ID: {self.TID} | DATA: {len(data)} | TIME: {color}{elapsed:.2f}{colors.END}")
+        while 120 - (start - time.time()) > 0:
+            pass
+        print("Terminated successfully.")
 
     def verifyAck(self, seqID, ack, packet):
         md5 = self.compute_checksum(packet)
