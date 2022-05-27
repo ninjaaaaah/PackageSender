@@ -176,9 +176,9 @@ class Sender:
 
 args = parseArguments()
 sender = Sender(args)
+sender.downloadPackage()
 sender.sendIntentMessage()
 if sender.TID != "Existing alive transaction":
-    sender.downloadPackage()
     sender.sendPackage()
     sender.waitEnd()
 else:
