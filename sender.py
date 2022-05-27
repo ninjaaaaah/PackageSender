@@ -104,11 +104,11 @@ class Sender:
             except:
                 t1 = time.time()
                 duration = t1 - t0
-                # if last != 0 and last != initsize:
-                #     optimal = last
-                #     size = optimal
-                # else:
-                #     size = int(size // (5/2))
+                if last != 0 and last != initsize:
+                    optimal = last
+                    size = optimal
+                else:
+                    size = int(size * 0.9)
 
                 optimal = last
                 size = last
