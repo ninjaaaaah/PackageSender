@@ -73,7 +73,7 @@ class Sender:
             isLast = 1 if sent + size >= len(data) else 0
 
             packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{data[sent:sent+size]}"
-            print(f"SEN:\t{seqID} | LEN:\t{size}")
+            print(f"{seqID} | LEN:\t{size} | ", end="")
 
             self.sock.sendto(
                 packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
@@ -86,9 +86,11 @@ class Sender:
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
             except:
+                t1 = time.time()
+                duration = t1 - t0
                 if last != 0 and last != initsize:
                     optimal = last
-                    print(optimal, len(data))
+                    print(F"NACK | DUR: {duration} | COM:\t{sent}/{len(data)}")
                     size = optimal
                 else:
                     size = int(size // 3/2)
@@ -109,8 +111,11 @@ class Sender:
                     last = size
                     size = int(len(data) // ((95-rate) / rate)) + seq
                     print(
-                        f"ACK:\t{seqID} | DUR:\t{duration} | COM:\t{sent}/{len(data)}")
+                        f"ACK | DUR:\t{duration} | COM:\t{sent}/{len(data)}")
                 seq += 1
+            else:
+                print(
+                    f"ERR | DUR:\t{duration} | COM:\t{sent}/{len(data)}")
 
     def verifyAck(self, seqID, ack, packet):
         md5 = self.compute_checksum(packet)
