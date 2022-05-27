@@ -24,6 +24,13 @@ def parseArguments():
     return args
 
 
+class colors:
+    ACK = '\033[92m'
+    NON = '\033[93m'
+    ERR = '\033[91m'
+    END = '\033[0m'
+
+
 class Sender:
     def __init__(self, args) -> None:
         self.PID = PID
@@ -97,7 +104,7 @@ class Sender:
                 else:
                     size = int(size // (5/2))
                 print(
-                    f"  NON | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent}/{len(data)}")
+                    f"{colors.NON}  NON | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent}/{len(data)}{colors.END}")
                 elapsed += duration
                 cons += 1
                 if cons == 3:
@@ -117,10 +124,10 @@ class Sender:
 
                 if self.verifyAck(seqID, ack, packet):
                     print(
-                        f"  ACK | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}")
+                        f"{colors.ACK}  ACK | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
                 else:
                     print(
-                        f"  ERR | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}")
+                        f"{colors.ERR}  ERR | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
 
                 print(f"  - {ack}")
 
