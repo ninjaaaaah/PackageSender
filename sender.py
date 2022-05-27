@@ -51,6 +51,7 @@ class Sender:
 
     # Sending an Intent Message
     def sendIntentMessage(self):
+        self.timer = time.time()
         intent = f"ID{self.PID}".encode()
         self.sock.sendto(intent, (self.IP_ADDRESS, self.SENDER_PORT_NO))
         data, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
@@ -72,7 +73,6 @@ class Sender:
         print(f"Transaction ID: {self.TID} | DATA: {len(data)}")
 
         self.sock.settimeout(15)
-        start = time.time()
         while True:
             if sent >= len(data):
                 break
@@ -149,16 +149,6 @@ class Sender:
         print(
             f"Transaction ID: {self.TID} | DATA: {len(data)} | TIME: {color}{elapsed:.2f}{colors.END}")
 
-        print()
-        while True:
-            remaining = 120 - (time.time() - start)
-            if remaining <= 0:
-                break
-            print("\033[A                             \033[A")
-            print(
-                f"{120 - (time.time() - start):.2f}s | [{('█'*int(10 - math.floor(remaining/120 *10))).ljust(10)}]")
-        print("Terminated successfully.")
-
     def verifyAck(self, seqID, ack, packet):
         md5 = self.compute_checksum(packet)
         correct = f"ACK{seqID}TXN{self.TID}MD5{md5}"
@@ -167,6 +157,17 @@ class Sender:
     def compute_checksum(self, packet):
         return hashlib.md5(packet.encode('utf-8')).hexdigest()
 
+    def waitEnd(self):
+        print()
+        while True:
+            remaining = 120 - (time.time() - self.timer)
+            if remaining <= 0:
+                break
+            print("\033[A                             \033[A")
+            print(
+                f"{120 - (time.time() - self.timer):.2f}s | [{('█'*int(math.floor(remaining/120 *10))).ljust(10)}]")
+        print("Terminated successfully.")
+
 
 args = parseArguments()
 sender = Sender(args)
@@ -174,5 +175,6 @@ sender.sendIntentMessage()
 if sender.TID != "Existing alive transaction":
     # sender.downloadPackage()
     sender.sendPackage()
+    sender.waitEnd()
 else:
     print("Existing alive transaction")
