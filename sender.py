@@ -103,10 +103,6 @@ class Sender:
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
 
-            except KeyboardInterrupt:
-                print("\n  OPTIMAL VALUE FOUND ")
-                size = last
-
             except:
                 t1 = time.time()
                 duration = t1 - t0
