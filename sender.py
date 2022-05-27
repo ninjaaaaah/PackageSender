@@ -74,7 +74,7 @@ class Sender:
             isLast = 1 if sent + size >= len(data) else 0
 
             packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{data[sent:sent+size]}"
-            print(f" {seqID} | ", end="")
+            print(f" {seqID}:")
 
             self.sock.sendto(
                 packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
@@ -82,7 +82,6 @@ class Sender:
             t0 = time.time()
 
             if rate != 0:
-                print("rate set")
                 self.sock.settimeout(rate)
 
             try:
@@ -96,7 +95,7 @@ class Sender:
                 else:
                     size = int(size // (5/2))
                 print(
-                    f"NON | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent}/{len(data)}")
+                    f"  NON | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent}/{len(data)}")
                 elapsed += duration
                 cons += 1
                 if cons == 3:
@@ -112,16 +111,15 @@ class Sender:
 
             if rate == 0:
                 rate = duration
-                print("rate found")
 
             ack = reply.decode()
 
             if self.verifyAck(seqID, ack, packet):
                 print(
-                    f"ACK | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}")
+                    f"  ACK | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}")
             else:
                 print(
-                    f"ERR | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}")
+                    f"  ERR | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}")
 
             sent += size
             if optimal == 0:
