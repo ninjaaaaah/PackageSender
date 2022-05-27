@@ -57,6 +57,7 @@ class Sender:
         seq = 0
         last = 0
         optimal = 0
+        elapsed = 0
 
         print(f"Transaction ID: {self.TID} | DATA: {len(data)}")
 
@@ -94,6 +95,7 @@ class Sender:
                     size = int(size // 3/2)
                 print(
                     F"NON | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent}/{len(data)}")
+                elapsed += duration
                 continue
 
             t1 = time.time()
@@ -117,6 +119,10 @@ class Sender:
                 last = size
                 size = int(len(data) // ((95-rate) / rate)) + seq
             seq += 1
+            elapsed += duration
+
+        print(
+            f"Transaction ID: {self.TID} | DATA: {len(data)} | TIME: {round(elapsed,2)}")
 
     def verifyAck(self, seqID, ack, packet):
         md5 = self.compute_checksum(packet)
