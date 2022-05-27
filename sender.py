@@ -51,7 +51,7 @@ class Sender:
     def sendPackage(self):
         data = open(f"{self.PID}.txt", "r").read()
         sent = 0
-        initsize = len(data) // 15
+        initsize = 10
         size = initsize
         rate = 0
         seq = 0
