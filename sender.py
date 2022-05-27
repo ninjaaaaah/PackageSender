@@ -120,13 +120,13 @@ class Sender:
                 print(
                     f"ERR | LEN: {str(size).zfill(3)} | DUR: {'{0:.2g}'.format(duration).zfill(5)} | COM: {sent+size}/{len(data)}")
 
+            sent += size
+            if optimal == 0:
+                last = size
+                size = int(len(data) // ((95-rate) / rate)) + int(1.2*seq)
+            seq += 1
             elapsed += duration
 
-        sent += size
-        if optimal == 0:
-            last = size
-            size = int(len(data) // ((95-rate) / rate)) + int(1.2*seq)
-        seq += 1
         print(
             f"Transaction ID: {self.TID} | DATA: {len(data)} | TIME: {round(elapsed,2)}")
 
