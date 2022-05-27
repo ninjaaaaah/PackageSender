@@ -115,7 +115,7 @@ class Sender:
 
                 print(
                     f"{colors.NON}  NON | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}")
-                elapsed += duration
+
                 cons += 1
                 if cons == 5:
                     break
