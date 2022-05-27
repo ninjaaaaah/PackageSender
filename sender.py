@@ -100,11 +100,11 @@ class Sender:
 
             ack = reply.decode()
 
-            if self.verifyAck(seqID, ack, packet, duration):
-                sent += size
-                if optimal == 0:
-                    size = int(len(data) // (85 / rate)) + seq
-                seq += 1
+            # if self.verifyAck(seqID, ack, packet, duration):
+            sent += size
+            if optimal == 0:
+                size = int(len(data) // (85 / rate)) + seq
+            seq += 1
 
     def verifyAck(self, seqID, ack, packet, duration):
 
