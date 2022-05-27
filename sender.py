@@ -132,6 +132,7 @@ class Sender:
             f"Transaction ID: {self.TID} | DATA: {len(data)} | TIME: {round(elapsed,2)}")
 
     def verifyAck(self, seqID, ack, packet):
+        print("  CHK:", end=" ")
         md5 = self.compute_checksum(packet)
         correct = f"ACK{seqID}TXN{self.TID}MD5{md5}"
         return ack == correct
