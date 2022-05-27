@@ -27,6 +27,7 @@ def parseArguments():
 
 
 class colors:
+    TOP = '\033[95m'
     ACK = '\033[92m'
     NON = '\033[93m'
     ERR = '\033[91m'
@@ -93,7 +94,6 @@ class Sender:
             isLast = 1 if sent + size >= len(data) else 0
 
             packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{data[sent:sent+size]}"
-            print(f" {seqID}:") if prev != seq else None
 
             self.sock.sendto(
                 packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
@@ -114,7 +114,7 @@ class Sender:
 
                 size = max(min(int(size * 0.5), size-1), last)
 
-                status = f"{colors.NON}  NON | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
+                status = f"[{colors.TOP}{seqID}{colors.END}] : {colors.NON}  NON | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
 
                 cons += 1
                 if cons == 5:
@@ -134,9 +134,9 @@ class Sender:
                 ack = reply.decode()
 
                 if self.verifyAck(seqID, ack, packet):
-                    status = f"{colors.ACK}  ACK | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
+                    status = f"[{colors.TOP}{seqID}{colors.END}] : {colors.ACK}  ACK | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
                 else:
-                    status = f"{colors.ERR}  ERR | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
+                    status = f"[{colors.TOP}{seqID}{colors.END}] : {colors.ERR}  ERR | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
 
                 elapsed = time.time() - self.timer
                 target = target if elapsed < target else 120
