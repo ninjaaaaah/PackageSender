@@ -95,7 +95,7 @@ class Sender:
                 else:
                     size = int(size // (5/2))
                 print(
-                    F"NON | LEN: {str(size).zfill(3)} | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent}/{len(data)}")
+                    F"NON | LEN: {str(size).zfill(3)} | DUR: {{.2}.format(duration)).zfill(5)} | COM: {sent}/{len(data)}")
                 elapsed += duration
                 cons += 1
                 if cons == 3:
@@ -115,16 +115,16 @@ class Sender:
 
             if self.verifyAck(seqID, ack, packet):
                 print(
-                    f"ACK | LEN: {str(size).zfill(3)} | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent+size}/{len(data)}")
+                    f"ACK | LEN: {str(size).zfill(3)} | DUR: {'{0:.3g}'.format(duration).zfill(5)} | COM: {sent+size}/{len(data)}")
+                sent += size
+                if optimal == 0:
+                    last = size
+                    size = int(len(data) // ((95-rate) / rate)) + seq
+                seq += 1
             else:
                 print(
-                    f"ERR | LEN: {str(size).zfill(3)} | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent+size}/{len(data)}")
+                    f"ERR | LEN: {str(size).zfill(3)} | DUR: {'{0:.3g}'.format(duration).zfill(5)} | COM: {sent+size}/{len(data)}")
 
-            sent += size
-            if optimal == 0:
-                last = size
-                size = int(len(data) // ((95-rate) / rate)) + seq
-            seq += 1
             elapsed += duration
 
         print(
