@@ -61,7 +61,8 @@ class Sender:
         self.TID = data.decode()
 
     def sendPackage(self):
-        data = open(f"{self.PID}.txt", "r").read()
+        self.file = open(f"{self.PID}.txt", "r")
+        data = self.file.read()
         sent = 0
         initsize = 1
         size = initsize
@@ -175,6 +176,7 @@ class Sender:
             if remaining <= 0:
                 break
         print("Terminated successfully.")
+        self.file.close()
 
     def log(self):
         with open('log.txt', 'a') as f:
