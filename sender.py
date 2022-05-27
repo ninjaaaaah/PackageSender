@@ -148,8 +148,8 @@ class Sender:
         color = colors.ACK if elapsed < 95 else colors.NON if elapsed < 100 else colors.ERR
         print(
             f"Transaction ID: {self.TID} | DATA: {len(data)} | TIME: {color}{elapsed:.2f}{colors.END}")
-        while 120 - (start - time.time()) > 0:
-            print(120 - (start - time.time()))
+        while 120 - (time.time() - start) > 0:
+            print(120 - (time.time() - start))
         print("Terminated successfully.")
 
     def verifyAck(self, seqID, ack, packet):
