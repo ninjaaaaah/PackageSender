@@ -96,7 +96,8 @@ class Sender:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
 
             except KeyboardInterrupt:
-                size = last - 1
+                optimal = last
+                size = last
 
             except:
                 t1 = time.time()
