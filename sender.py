@@ -153,9 +153,9 @@ class Sender:
 
         color = colors.ACK if elapsed < 95 else colors.NON if elapsed < 100 else colors.ERR
         status = 'SUCCESS' if done else 'FAIL'
-        result = f"Transaction ID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | {color}{status}{colors.END} | TIME: {color}{elapsed:.2f}{colors.END}"
-        self.result = f"TID: {self.TID} | RES: {status} | DUR: {elapsed:.2f}"
-        print(result)
+        self.result = f"Transaction ID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | {color}{status}{colors.END} | TIME: {color}{elapsed:.2f}{colors.END}"
+        # self.result = f"TID: {self.TID} | RES: {status} | DUR: {elapsed:.2f}"
+        print(self.result)
 
     def verifyAck(self, seqID, ack, packet):
         md5 = self.compute_checksum(packet)
@@ -177,7 +177,7 @@ class Sender:
         print("Terminated successfully.")
 
     def log(self):
-        with open('log.txt', 'w') as f:
+        with open('log.txt', 'wa') as f:
             sys.stdout = f
             print(self.result)
             sys.stdout = sys.stdout
