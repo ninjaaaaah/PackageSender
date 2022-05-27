@@ -73,7 +73,7 @@ class Sender:
             isLast = 1 if sent + size >= len(data) else 0
 
             packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{data[sent:sent+size]}"
-            print(f"\t{seqID} | LEN: {str(size).zfill(3)} | ", end="")
+            print(f" {seqID} | ", end="")
 
             self.sock.sendto(
                 packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
@@ -94,7 +94,7 @@ class Sender:
                 else:
                     size = int(size // 3/2)
                 print(
-                    F"NON | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent}/{len(data)}")
+                    F"LEN: {str(size).zfill(3)} | NON | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent}/{len(data)}")
                 elapsed += duration
 
                 continue
@@ -110,10 +110,10 @@ class Sender:
 
             if self.verifyAck(seqID, ack, packet):
                 print(
-                    f"ACK | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent+size}/{len(data)}")
+                    f"LEN: {str(size).zfill(3)} | ACK | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent+size}/{len(data)}")
             else:
                 print(
-                    f"ERR | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent+size}/{len(data)}")
+                    f"LEN: {str(size).zfill(3)} | ERR | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent+size}/{len(data)}")
 
             sent += size
             if optimal == 0:
