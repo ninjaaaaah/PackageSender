@@ -129,7 +129,7 @@ class Sender:
 
                 duration = t1 - t0
 
-                rate = (rate + duration) / 2 if rate != 0 else rate
+                rate = (rate + duration) / 2 if rate != 0 else duration
 
                 ack = reply.decode()
 
