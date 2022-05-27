@@ -168,7 +168,7 @@ class Sender:
     def waitEnd(self):
         print()
         while True:
-            remaining = 125 - (time.time() - self.timer)
+            remaining = 120 - (time.time() - self.timer)
             print("\033[A                             \033[A")
             print(
                 f"{120 - (time.time() - self.timer):.2f}s | [{('█'*int(math.ceil(remaining/120 *10))).ljust(10)}]")
@@ -184,8 +184,8 @@ class Sender:
 
 
 args = parseArguments()
+sender = Sender(args)
 for i in range(5):
-    sender = Sender(args)
     sender.downloadPackage()
     sender.sendIntentMessage()
     if sender.TID != "Existing alive transaction":
