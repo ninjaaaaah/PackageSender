@@ -87,6 +87,10 @@ class Sender:
 
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
+                if not reply:  # timeout
+                    print(
+                        f"  OUT | LEN: {str(size).zfill(3)} | COM: {sent+size}/{len(data)}")
+                    break
                 cons = 0
                 t1 = time.time()
 
