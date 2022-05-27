@@ -59,7 +59,7 @@ class Sender:
         optimal = 0
         elapsed = 0
         cons = 0
-        prev = 0
+        prev = None
 
         print(f"Transaction ID: {self.TID} | DATA: {len(data)}")
 
@@ -107,7 +107,7 @@ class Sender:
                 sent += size
                 if optimal == 0:
                     last = size
-                    size = int(len(data) // ((95-rate) / rate)) + int(1.2*seq)
+                    size = int(len(data) // ((95-rate) / rate)) + int(1.5*seq)
                 prev = seq
                 seq += 1
                 elapsed += duration
