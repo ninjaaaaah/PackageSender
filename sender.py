@@ -135,10 +135,10 @@ class Sender:
 
                 if self.verifyAck(seqID, ack, packet):
                     print(
-                        f"{colors.ACK}  ACK | LEN: {size:2} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
+                        f"{colors.ACK}  ACK | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
                 else:
                     print(
-                        f"{colors.ERR}  ERR | LEN: {size:2} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
+                        f"{colors.ERR}  ERR | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
 
                 sent += size
                 elapsed += duration
