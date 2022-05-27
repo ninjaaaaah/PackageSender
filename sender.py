@@ -95,7 +95,7 @@ class Sender:
                 else:
                     size = int(size // (5/2))
                 print(
-                    F"NON | LEN: {str(size).zfill(3)} | DUR: {{.2}.format(duration)).zfill(5)} | COM: {sent}/{len(data)}")
+                    f"NON | LEN: {str(size).zfill(3)} | DUR: {{.2}.format(duration)).zfill(5)} | COM: {sent}/{len(data)}")
                 elapsed += duration
                 cons += 1
                 if cons == 3:
