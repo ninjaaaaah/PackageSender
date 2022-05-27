@@ -151,8 +151,9 @@ class Sender:
                 seq += 1
 
         color = colors.ACK if elapsed < 95 else colors.NON if elapsed < 100 else colors.ERR
+        status = 'SUCCESS' if done else 'FAIL'
         print(
-            f"Transaction ID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | {color}{'SUCCESS' if done else 'FAIL'}{colors.END} | TIME: {color}{elapsed:.2f}{colors.END}")
+            f"Transaction ID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | {color}{status}{colors.END} | TIME: {color}{elapsed:.2f}{colors.END}")
 
     def verifyAck(self, seqID, ack, packet):
         md5 = self.compute_checksum(packet)
