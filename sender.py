@@ -179,10 +179,7 @@ class Sender:
         self.file.close()
 
     def log(self):
-        with open('log.txt', 'a') as f:
-            sys.stdout = f
-            print(self.result)
-            sys.stdout = sys.stdout
+        open('log.txt', 'a').write(f"{self.result}\n")
 
 
 args = parseArguments()
