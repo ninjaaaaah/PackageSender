@@ -95,7 +95,7 @@ class Sender:
                 else:
                     size = int(size // (5/2))
                 print(
-                    f"NON | LEN: {str(size).zfill(3)} | DUR: {'{0:.3g}'.format(duration).zfill(5)} | COM: {sent}/{len(data)}")
+                    f"NON | LEN: {str(size).zfill(3)} | DUR: {'{0:.2g}'.format(duration).zfill(5)} | COM: {sent}/{len(data)}")
                 elapsed += duration
                 cons += 1
                 if cons == 3:
@@ -115,10 +115,10 @@ class Sender:
 
             if self.verifyAck(seqID, ack, packet):
                 print(
-                    f"ACK | LEN: {str(size).zfill(3)} | DUR: {'{0:.3g}'.format(duration).zfill(5)} | COM: {sent+size}/{len(data)}")
+                    f"ACK | LEN: {str(size).zfill(3)} | DUR: {'{0:.2g}'.format(duration).zfill(5)} | COM: {sent+size}/{len(data)}")
             else:
                 print(
-                    f"ERR | LEN: {str(size).zfill(3)} | DUR: {'{0:.3g}'.format(duration).zfill(5)} | COM: {sent+size}/{len(data)}")
+                    f"ERR | LEN: {str(size).zfill(3)} | DUR: {'{0:.2g}'.format(duration).zfill(5)} | COM: {sent+size}/{len(data)}")
 
             elapsed += duration
 
