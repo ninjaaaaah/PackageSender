@@ -126,9 +126,11 @@ class Sender:
                 if optimal == 0:
                     last = size
                     size = int(len(data) // ((95-rate) / rate)) + int(1.5*seq)
-                prev = seq
                 seq += 1
                 elapsed += duration
+
+            finally:
+                prev = seq
 
         print(
             f"Transaction ID: {self.TID} | DATA: {len(data)} | TIME: {round(elapsed,2)}")
