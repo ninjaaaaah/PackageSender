@@ -103,6 +103,7 @@ class Sender:
             if rate != 0:
                 self.sock.settimeout(rate+1.5)
 
+            duration = 0
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
 
@@ -145,7 +146,6 @@ class Sender:
                         f"{colors.ERR}  ERR | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
 
                 sent += size
-                elapsed += duration
 
                 last = size
                 size = max(math.ceil((len(data)-sent) /
@@ -153,6 +153,9 @@ class Sender:
                 size = size if size < limit else (last+limit) // 2
                 prev = seq
                 seq += 1
+
+            finally:
+                elapsed += duration
 
         color = colors.ACK if elapsed < 95 else colors.NON if elapsed < 100 else colors.ERR
         status = 'SUCCESS' if done else 'FAIL'
