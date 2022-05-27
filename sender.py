@@ -106,16 +106,17 @@ class Sender:
             ack = reply.decode()
 
             if self.verifyAck(seqID, ack, packet):
-                sent += size
-                if optimal == 0:
-                    last = size
-                    size = int(len(data) // ((95-rate) / rate)) + seq
                 print(
-                    f"ACK | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent}/{len(data)}")
-                seq += 1
+                    f"ACK | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent+size}/{len(data)}")
             else:
                 print(
-                    f"ERR | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent}/{len(data)}")
+                    f"ERR | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent+size}/{len(data)}")
+
+            sent += size
+            if optimal == 0:
+                last = size
+                size = int(len(data) // ((95-rate) / rate)) + seq
+            seq += 1
 
     def verifyAck(self, seqID, ack, packet):
         md5 = self.compute_checksum(packet)
