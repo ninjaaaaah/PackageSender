@@ -91,7 +91,7 @@ class Sender:
             t0 = time.time()
 
             if rate != 0:
-                self.sock.settimeout(rate + 2)
+                self.sock.settimeout(rate)
 
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
@@ -128,7 +128,7 @@ class Sender:
                 duration = t1 - t0
 
                 if rate == 0:
-                    rate = duration
+                    rate = duration + 1
 
                 ack = reply.decode()
 
@@ -143,7 +143,7 @@ class Sender:
                 if optimal == 0:
                     last = size
                     size = math.ceil((len(data)-sent) /
-                                     ((90-elapsed) / rate) * 1.1)
+                                     ((90-elapsed) / rate))
                 prev = seq
                 seq += 1
                 elapsed += duration
