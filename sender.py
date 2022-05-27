@@ -83,7 +83,7 @@ class Sender:
             isLast = 1 if sent + size >= len(data) else 0
 
             packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{data[sent:sent+size]}"
-            print(f" {seqID} | SIZE {size}:") if prev != seq else None
+            print(f" {seqID}:") if prev != seq else None
 
             self.sock.sendto(
                 packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
@@ -109,7 +109,7 @@ class Sender:
                 size = min(int(size * 0.95), size-1)
 
                 print(
-                    f"{colors.NON}  NON | DUR: {duration:5.2f} | COM: {sent}/{len(data)}{colors.END}")
+                    f"{colors.NON}  NON | LEN: {size} | DUR: {duration:5.2f} | COM: {sent}/{len(data)}{colors.END}")
                 elapsed += duration
                 cons += 1
                 if cons == 3:
@@ -129,10 +129,10 @@ class Sender:
 
                 if self.verifyAck(seqID, ack, packet):
                     print(
-                        f"{colors.ACK}  ACK | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
+                        f"{colors.ACK}  ACK | LEN: {size} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
                 else:
                     print(
-                        f"{colors.ERR}  ERR | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
+                        f"{colors.ERR}  ERR | LEN: {size} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
 
                 sent += size
 
