@@ -21,7 +21,7 @@ def parseArguments():
                         help="Port number used by the sender", default=9000)
     parser.add_argument("-i", "--id", type=str,
                         help="Unique Identifier", default=PID)
-    parser.add_argument("-t", "--testcases", type=str,
+    parser.add_argument("-t", "--testcases", type=int,
                         help="Number of Testcases", default=1)
     args = parser.parse_args()
     return args
