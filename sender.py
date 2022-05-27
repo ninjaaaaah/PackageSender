@@ -86,6 +86,9 @@ class Sender:
             if size == 0:
                 break
 
+            if time.time() - self.timer > 120:
+                break
+
             seqID = f"{seq}".zfill(7)
             isLast = 1 if sent + size >= len(data) else 0
 
