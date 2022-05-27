@@ -177,7 +177,7 @@ class Sender:
         print("Terminated successfully.")
 
     def log(self):
-        with open('log.txt', 'wa') as f:
+        with open('log.txt', 'a') as f:
             sys.stdout = f
             print(self.result)
             sys.stdout = sys.stdout
