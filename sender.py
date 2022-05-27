@@ -150,9 +150,13 @@ class Sender:
             f"Transaction ID: {self.TID} | DATA: {len(data)} | TIME: {color}{elapsed:.2f}{colors.END}")
 
         print()
-        while 120 - (time.time() - start) > 0:
+        while True:
+            remaining = 120 - (time.time() - start)
+            if remaining == 0:
+                break
             print("\033[A                             \033[A")
-            print(f"{120 - (time.time() - start):.2f}")
+            print(
+                f"{120 - (time.time() - start):.2f} | [{('█'*int(120//remaining)).ljust(10)}]")
         print("Terminated successfully.")
 
     def verifyAck(self, seqID, ack, packet):
