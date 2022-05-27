@@ -110,7 +110,7 @@ class Sender:
                 size = min(int(size * 0.5), size-1)
 
                 print(
-                    f"{colors.NON}  NON | LEN: {size} | DUR: {duration:5.2f} | COM: {sent}/{len(data)}{colors.END}")
+                    f"{colors.NON}  NON | LEN: {size:2.} | DUR: {duration:5.2f} | COM: {sent}/{len(data)}{colors.END}")
                 elapsed += duration
                 cons += 1
                 if cons == 5:
@@ -130,10 +130,10 @@ class Sender:
 
                 if self.verifyAck(seqID, ack, packet):
                     print(
-                        f"{colors.ACK}  ACK | LEN: {size} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
+                        f"{colors.ACK}  ACK | LEN: {size:2.} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
                 else:
                     print(
-                        f"{colors.ERR}  ERR | LEN: {size} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
+                        f"{colors.ERR}  ERR | LEN: {size:2.} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
 
                 sent += size
                 elapsed += duration
