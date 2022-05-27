@@ -162,7 +162,7 @@ args = parseArguments()
 sender = Sender(args)
 sender.sendIntentMessage()
 if sender.TID != "Existing alive transaction":
-    sender.downloadPackage()
+    # sender.downloadPackage()
     sender.sendPackage()
 else:
     print("Existing alive transaction")
