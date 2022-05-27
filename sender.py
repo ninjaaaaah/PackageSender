@@ -103,6 +103,8 @@ class Sender:
             if rate != 0:
                 self.sock.settimeout(rate+1.5)
 
+            print(f"[ {colors.TOP}{seqID}{colors.END} ] ")
+
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
 
@@ -114,12 +116,11 @@ class Sender:
 
                 size = max(min(int(size * 0.5), size-1), last)
 
-                status = f"[{colors.TOP}{seqID}{colors.END}] : {colors.NON}  NON | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
+                status = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
 
                 cons += 1
                 if cons == 5:
                     break
-                prev = seq
                 elapsed = time.time() - self.timer
 
             else:
@@ -134,9 +135,9 @@ class Sender:
                 ack = reply.decode()
 
                 if self.verifyAck(seqID, ack, packet):
-                    status = f"[{colors.TOP}{seqID}{colors.END}] : {colors.ACK}  ACK | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
+                    status = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
                 else:
-                    status = f"[{colors.TOP}{seqID}{colors.END}] : {colors.ERR}  ERR | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
+                    status = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
 
                 elapsed = time.time() - self.timer
                 target = target if elapsed < target else 120
@@ -146,10 +147,10 @@ class Sender:
                 size = max(math.ceil((len(data)-sent) /
                                      math.ceil((target-elapsed) / math.floor(rate+1))), last)
                 size = size if size < limit else (last+limit) // 2
-                prev = seq
                 seq += 1
 
             finally:
+                print("\033[A                             \033[A")
                 print(status)
 
         elapsed = time.time() - self.timer
