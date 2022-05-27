@@ -136,6 +136,7 @@ class Sender:
                         f"{colors.ERR}  ERR | LEN: {size} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
 
                 sent += size
+                elapsed += duration
 
                 last = size
                 size = max(math.ceil((len(data)-sent) /
@@ -143,7 +144,6 @@ class Sender:
                 size = size if size < limit else (last+limit) // 2
                 prev = seq
                 seq += 1
-                elapsed += duration
 
         color = colors.ACK if elapsed < 95 else colors.NON if elapsed < 100 else colors.ERR
         print(
