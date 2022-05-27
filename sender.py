@@ -87,6 +87,22 @@ class Sender:
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
 
+            except:
+                t1 = time.time()
+                duration = t1 - t0
+                if last != 0 and last != initsize:
+                    optimal = last
+                    size = optimal
+                else:
+                    size = int(size // (5/2))
+                print(
+                    f"  NON | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent}/{len(data)}")
+                elapsed += duration
+                cons += 1
+                if cons == 3:
+                    break
+
+            else:
                 cons = 0
                 t1 = time.time()
 
@@ -110,21 +126,6 @@ class Sender:
                     size = int(len(data) // ((95-rate) / rate)) + int(1.2*seq)
                 seq += 1
                 elapsed += duration
-
-            except:
-                t1 = time.time()
-                duration = t1 - t0
-                if last != 0 and last != initsize:
-                    optimal = last
-                    size = optimal
-                else:
-                    size = int(size // (5/2))
-                print(
-                    f"  NON | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent}/{len(data)}")
-                elapsed += duration
-                cons += 1
-                if cons == 3:
-                    break
 
         print(
             f"Transaction ID: {self.TID} | DATA: {len(data)} | TIME: {round(elapsed,2)}")
