@@ -166,11 +166,11 @@ class Sender:
         print()
         while True:
             remaining = 120 - (time.time() - self.timer)
-            if remaining <= 0:
-                break
             print("\033[A                             \033[A")
             print(
                 f"{120 - (time.time() - self.timer):.2f}s | [{('█'*int(math.ceil(remaining/120 *10))).ljust(10)}]")
+            if remaining <= 0:
+                break
         print("Terminated successfully.")
 
 
