@@ -119,7 +119,7 @@ class Sender:
                 if cons == 5:
                     break
                 prev = seq
-                elapsed = self.timer - time.time()
+                elapsed = time.time() - self.timer
 
             else:
                 cons = 0
@@ -139,7 +139,7 @@ class Sender:
                     print(
                         f"{colors.ERR}  ERR | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
 
-                elapsed = self.timer - time.time()
+                elapsed = time.time() - self.timer
                 target = target if elapsed < target else 120
                 sent += size
 
@@ -150,7 +150,7 @@ class Sender:
                 prev = seq
                 seq += 1
 
-        elapsed = self.timer - time.time()
+        elapsed = time.time() - self.timer
         color = colors.ACK if elapsed < 95 else colors.NON if elapsed < 100 else colors.ERR
         status = 'SUCCESS' if done else 'FAIL'
         code = colors.ACK if done else colors.ERR
