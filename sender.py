@@ -129,8 +129,6 @@ class Sender:
                     print(
                         f"{colors.ERR}  ERR | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
 
-                print(f"  - {ack}")
-
                 sent += size
                 if optimal == 0:
                     last = size
