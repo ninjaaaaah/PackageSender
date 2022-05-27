@@ -114,7 +114,7 @@ class Sender:
                 t1 = time.time()
                 duration = t1 - t0
 
-                limit = size
+                limit = size if size != last else len(data)
 
                 size = max(min(int(size * 0.5), size-1), last)
 
