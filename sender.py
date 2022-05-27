@@ -110,6 +110,7 @@ class Sender:
                     size = int(len(data) // ((95-rate) / rate)) + int(1.2*seq)
                 seq += 1
                 elapsed += duration
+
             except:
                 t1 = time.time()
                 duration = t1 - t0
@@ -131,7 +132,6 @@ class Sender:
             f"Transaction ID: {self.TID} | DATA: {len(data)} | TIME: {round(elapsed,2)}")
 
     def verifyAck(self, seqID, ack, packet):
-        print("  CHK:", end=" ")
         md5 = self.compute_checksum(packet)
         correct = f"ACK{seqID}TXN{self.TID}MD5{md5}"
         return ack == correct
@@ -144,7 +144,7 @@ args = parseArguments()
 sender = Sender(args)
 sender.sendIntentMessage()
 if sender.TID != "Existing alive transaction":
-    # sender.downloadPackage()
+    sender.downloadPackage()
     sender.sendPackage()
 else:
     print("Existing alive transaction")
