@@ -107,7 +107,7 @@ class Sender:
 
                 limit = size
 
-                size = min(int(size * 0.95), size-1)
+                size = min(int(size * 0.5), size-1)
 
                 print(
                     f"{colors.NON}  NON | LEN: {size} | DUR: {duration:5.2f} | COM: {sent}/{len(data)}{colors.END}")
