@@ -58,7 +58,7 @@ class Sender:
     def sendPackage(self):
         data = open(f"{self.PID}.txt", "r").read()
         sent = 0
-        initsize = len(data) // (95/15)
+        initsize = 1
         size = initsize
         rate = 0
         seq = 0
@@ -141,7 +141,7 @@ class Sender:
                 sent += size
                 if optimal == 0:
                     last = size
-                    size = int(len(data) // (95 / rate)) + int(2*seq)
+                    size = int((len(data)-sent) // int(95 / rate)) + int(2*seq)
                 prev = seq
                 seq += 1
                 elapsed += duration
