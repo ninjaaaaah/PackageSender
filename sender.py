@@ -114,7 +114,7 @@ class Sender:
                 size = last
 
                 print(
-                    f"{colors.NON}  NON | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent}/{len(data)}{colors.END}")
+                    f"{colors.NON}  NON | DUR: {duration:5.2f} | COM: {sent}/{len(data)}{colors.END}")
                 elapsed += duration
                 cons += 1
                 if cons == 3:
@@ -134,10 +134,10 @@ class Sender:
 
                 if self.verifyAck(seqID, ack, packet):
                     print(
-                        f"{colors.ACK}  ACK | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
+                        f"{colors.ACK}  ACK | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
                 else:
                     print(
-                        f"{colors.ERR}  ERR | LEN: {str(size).zfill(3)} | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
+                        f"{colors.ERR}  ERR | DUR: {duration:5.2f} | COM: {sent+size}/{len(data)}{colors.END}")
 
                 sent += size
                 if optimal == 0:
