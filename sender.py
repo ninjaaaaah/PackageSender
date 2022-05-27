@@ -102,6 +102,8 @@ class Sender:
                     break
                 continue
 
+            cons = 0
+
             t1 = time.time()
 
             duration = t1 - t0
