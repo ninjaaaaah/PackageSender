@@ -96,6 +96,7 @@ class Sender:
                 print(
                     F"NON | DUR: {str(round(duration,2)).zfill(5)} | COM: {sent}/{len(data)}")
                 elapsed += duration
+
                 continue
 
             t1 = time.time()
