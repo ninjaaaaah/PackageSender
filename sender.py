@@ -116,7 +116,7 @@ class Sender:
                 eta = elapsed + ((len(data) - sent) / size) * rate
 
                 if self.verifyAck(seqID, ack, packet):
-                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | ETA: {eta:5.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
+                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | ETA: {eta:5.2f if seq !=0 else -----}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
                 else:
                     output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | ETA: {eta:5.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
 
