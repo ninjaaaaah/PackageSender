@@ -128,7 +128,6 @@ class Sender:
                     size = max(math.ceil(rem_data / rem_time * (rate+1)), last)
                     size = size if size < limit else min(math.floor(
                         (seq*last+limit) / (seq+1)), limit-1)
-                    print("---")
                 seq += 1
 
             except socket.timeout:
@@ -142,8 +141,8 @@ class Sender:
             finally:
 
                 elapsed = time.time() - self.timer
-                print("\033[A                             \033[A")
-                print(output)
+                # print("\033[A                             \033[A")
+                # print(output)
                 open(f"transactions/{self.TID}.log", "a").write(f"{output}\n")
 
         elapsed = time.time() - self.timer
