@@ -124,7 +124,7 @@ class Sender:
                 target = target if elapsed < target else 120
                 rem_time = target - elapsed
                 rem_data = (len(data)-sent)
-                if eta > 93:
+                if eta > 94:
                     size = max(math.floor(
                         rem_data / rem_time * rate)+1, last+1)
                     size = size if size < limit else min(math.floor(
