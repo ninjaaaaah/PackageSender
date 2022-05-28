@@ -108,6 +108,8 @@ class Sender:
 
                 rate = (seq*rate + time.time() - t0) / \
                     (seq + 1) if rate != 0 else time.time() - t0
+                elapsed = time.time() - self.timer
+                eta = elapsed + ((len(data) - sent) / size) * rate
                 if rate != 0:
                     self.sock.settimeout(rate+1)
 
@@ -119,7 +121,6 @@ class Sender:
                 sent += size
                 last = size
                 elapsed = time.time() - self.timer
-                eta = elapsed + ((len(data) - sent) / size) * rate
                 target = target if elapsed < target else 120
                 rem_time = target - elapsed
                 rem_data = (len(data)-sent)
