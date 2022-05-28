@@ -100,7 +100,7 @@ class Sender:
             t0 = time.time()
 
             if rate != 0:
-                self.sock.settimeout(rate+1.5)
+                self.sock.settimeout(rate+3)
 
             print(f"[ {colors.TOP}{seqID}{colors.END} ] ")
 
