@@ -121,6 +121,11 @@ class Sender:
                 size = size if size < limit else (last+limit) // 2
                 seq += 1
 
+                rate = (seq*rate + time.time() - t0) / \
+                    (seq + 1) if rate != 0 else time.time() - t0
+                if rate != 0:
+                    self.sock.settimeout(rate+3)
+
             except socket.timeout:
 
                 limit = size if size != last else len(data)
@@ -134,10 +139,6 @@ class Sender:
                     break
 
             finally:
-                rate = (seq*rate + time.time() - t0) / \
-                    (seq + 1) if rate != 0 else time.time() - t0
-                if rate != 0:
-                    self.sock.settimeout(rate+3)
 
                 elapsed = time.time() - self.timer
                 print("\033[A                             \033[A")
