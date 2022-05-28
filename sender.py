@@ -106,23 +106,6 @@ class Sender:
 
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
-
-            except:
-                t1 = time.time()
-                duration = t1 - t0
-
-                limit = size if size != last else len(data)
-
-                size = max(min(int(size * 0.5), size-1), last)
-
-                status = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
-
-                cons += 1
-                if cons == 5:
-                    break
-                elapsed = time.time() - self.timer
-
-            else:
                 cons = 0
                 t1 = time.time()
 
@@ -138,7 +121,6 @@ class Sender:
                 else:
                     status = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
 
-                elapsed = time.time() - self.timer
                 target = target if elapsed < target else 120
                 sent += size
 
@@ -148,7 +130,22 @@ class Sender:
                 size = size if size < limit else (last+limit) // 2
                 seq += 1
 
+            except:
+                t1 = time.time()
+                duration = t1 - t0
+
+                limit = size if size != last else len(data)
+
+                size = max(min(int(size * 0.5), size-1), last)
+
+                status = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
+
+                cons += 1
+                if cons == 5:
+                    break
+
             finally:
+                elapsed = time.time() - self.timer
                 print("\033[A                             \033[A")
                 print(status)
                 open(f"transactions/{self.TID}.log", "a").write(f"{status}\n")
