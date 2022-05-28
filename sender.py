@@ -108,9 +108,9 @@ class Sender:
                 ack = reply.decode()
 
                 if self.verifyAck(seqID, ack, packet):
-                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | LEN: {size:2} | LIM: {limit:2} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
+                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
                 else:
-                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | LEN: {size:2} | LIM: {limit:2} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
+                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
 
                 target = target if elapsed < target else 120
                 sent += size
@@ -130,17 +130,15 @@ class Sender:
                 try:
                     reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
                 except socket.timeout:
-                    pass
+                    limit = size if size != last else len(data)
 
-                limit = size if size != last else len(data)
+                    size = max(min(int(size * 0.5), size-1), last)
 
-                size = max(min(int(size * 0.5), size-1), last)
+                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
 
-                output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | LEN: {size:2} | LIM: {limit:2} | LIM: {limit:2} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
-
-                cons += 1
-                if cons == 5:
-                    break
+                    cons += 1
+                    if cons == 5:
+                        break
 
             finally:
 
