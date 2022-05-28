@@ -126,7 +126,7 @@ class Sender:
                 rem_data = (len(data)-sent)
                 size = max(math.ceil(rem_data / rem_time * (rate+1)), last)
                 size = size if size < limit else min(math.floor(
-                    (seq*last+limit) / (seq+1)), limit-1)
+                    (seq*size+limit) / (seq+1)), limit-1)
                 seq += 1
 
             except socket.timeout:
