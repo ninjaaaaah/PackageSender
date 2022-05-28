@@ -132,9 +132,9 @@ class Sender:
                 except socket.timeout:
                     limit = size if size != last else len(data)
 
-                    size = max(min(int(size * 0.5), size-1), last)
-
                     output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
+
+                    size = max(min(int(size * 0.5), size-1), last)
 
                     cons += 1
                     if cons == 5:
