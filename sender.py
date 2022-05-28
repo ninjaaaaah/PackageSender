@@ -135,7 +135,8 @@ class Sender:
                 try:
                     reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
                 except socket.timeout:
-                     eta = elapsed + rate + ((len(data) - sent) / size) * rate
+
+                    eta = elapsed + rate + ((len(data) - sent) / size) * rate
                     limit = size if size != last else len(data)
 
                     output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | ETA: {eta:5.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
