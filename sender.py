@@ -99,9 +99,6 @@ class Sender:
 
             t0 = time.time()
 
-            if rate != 0:
-                self.sock.settimeout(rate+3)
-
             print(f"[ {colors.TOP}{seqID}{colors.END} ] ")
 
             try:
@@ -110,9 +107,6 @@ class Sender:
                 t1 = time.time()
 
                 duration = t1 - t0
-
-                rate = (seq*rate + duration) / \
-                    (seq + 1) if rate != 0 else duration
 
                 ack = reply.decode()
 
@@ -145,6 +139,11 @@ class Sender:
                     break
 
             finally:
+                rate = (seq*rate + duration) / \
+                    (seq + 1) if rate != 0 else duration
+                if rate != 0:
+                    self.sock.settimeout(rate+3)
+
                 elapsed = time.time() - self.timer
                 print("\033[A                             \033[A")
                 print(status)
