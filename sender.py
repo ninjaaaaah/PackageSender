@@ -103,7 +103,6 @@ class Sender:
             t0 = time.time()
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
-                limit = size if size != last else len(data)
                 cons = 0
 
                 ack = reply.decode()
@@ -121,6 +120,8 @@ class Sender:
                                      math.ceil((target-elapsed) / math.floor(rate+1))), last)
                 size = size if size < limit else (last+limit) // 2
                 seq += 1
+
+                limit = size if size != last else len(data)
 
                 rate = (seq*rate + time.time() - t0) / \
                     (seq + 1) if rate != 0 else time.time() - t0
