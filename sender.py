@@ -124,7 +124,7 @@ class Sender:
                 rate = (seq*rate + time.time() - t0) / \
                     (seq + 1) if rate != 0 else time.time() - t0
                 if rate != 0:
-                    self.sock.settimeout(rate+3)
+                    self.sock.settimeout(rate+1)
 
             except socket.timeout:
                 try:
