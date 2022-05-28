@@ -167,7 +167,7 @@ class Sender:
             print("\033[A                             \033[A")
             if remaining <= 0:
                 break
-        print("Terminated successfully.")
+        print("Transaction closed.")
         self.file.close()
 
     def log(self):
