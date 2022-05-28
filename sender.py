@@ -104,7 +104,6 @@ class Sender:
             t0 = time.time()
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
-                cons = 0
 
                 ack = reply.decode()
 
@@ -141,10 +140,6 @@ class Sender:
                     output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | ETA: {eta:5.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
 
                     size = max(min(int(size * 0.5), size-1), last)
-
-                    cons += 1
-                    if cons == 5:
-                        break
 
             finally:
 
