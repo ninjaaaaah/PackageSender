@@ -111,8 +111,6 @@ class Sender:
                 if rate != 0:
                     self.sock.settimeout(rate+1)
 
-                eta = elapsed + ((len(data) - sent) / size) * rate
-
                 if self.verifyAck(seqID, ack, packet):
                     output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | ETA: {eta:6.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
                 else:
@@ -121,6 +119,7 @@ class Sender:
                 sent += size
                 last = size
                 elapsed = time.time() - self.timer
+                eta = elapsed + ((len(data) - sent) / size) * rate
                 target = target if elapsed < target else 120
                 rem_time = target - elapsed
                 rem_data = (len(data)-sent)
