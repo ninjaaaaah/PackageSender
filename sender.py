@@ -125,8 +125,8 @@ class Sender:
                 rem_time = target - elapsed
                 rem_data = (len(data)-sent)
                 size = max(math.ceil(rem_data / rem_time * (rate+1)), last)
-                size = size if size < limit else math.ceil(
-                    (seq*last+limit) / (seq+1))
+                size = size if size < limit else min(math.ceil(
+                    (seq*last+limit) / (seq+1)), limit-1)
                 seq += 1
 
             except socket.timeout:
@@ -177,7 +177,7 @@ class Sender:
 args = parseArguments()
 sender = Sender(args)
 for i in range(args.testcases):
-    sender.downloadPackage()
+    # sender.downloadPackage()
     sender.sendIntentMessage()
     if sender.TID != "Existing alive transaction":
         sender.sendPackage()
