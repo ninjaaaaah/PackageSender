@@ -143,7 +143,7 @@ class Sender:
                 elapsed = time.time() - self.timer
                 # print("\033[A                             \033[A")
                 # print(output)
-                open(f"transactions/{self.TID}.log", "a").write(f"{output}\n")
+                # open(f"transactions/{self.TID}.log", "a").write(f"{output}\n")
 
         elapsed = time.time() - self.timer
         color = colors.ACK if elapsed < 95 else colors.NON if elapsed < 100 else colors.ERR
