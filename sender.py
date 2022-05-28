@@ -115,9 +115,9 @@ class Sender:
                 eta = elapsed + ((len(data) - sent) / size) * rate
 
                 if self.verifyAck(seqID, ack, packet):
-                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | ETA: {str(round(eta,2)).rjust(5) if seq != 0 else '-----'}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
+                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | ETA: {eta:6.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
                 else:
-                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | ETA: {eta:5.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
+                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | ETA: {eta:6.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
 
                 target = target if elapsed < target else 120
                 sent += size
@@ -137,7 +137,7 @@ class Sender:
                     eta = elapsed + rate + ((len(data) - sent) / size) * rate
                     limit = size if size != last else len(data)
 
-                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | ETA: {eta:5.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
+                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | ETA: {eta:6.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
 
                     size = max(min(int(size * 0.5), size-1), last)
 
