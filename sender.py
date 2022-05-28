@@ -124,7 +124,7 @@ class Sender:
                 size = size if size < limit else (last+limit) // 2
                 seq += 1
 
-            except:
+            except socket.timeout:
                 t1 = time.time()
                 duration = t1 - t0
 
