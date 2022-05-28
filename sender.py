@@ -73,7 +73,7 @@ class Sender:
         limit = len(data)
         elapsed = 0
         done = False
-        target = 90
+        target = 95
         status = None
         output = ""
         eta = 0
