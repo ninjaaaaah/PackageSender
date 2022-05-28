@@ -77,6 +77,7 @@ class Sender:
         target = 90
         status = None
         output = ""
+        eta = 0
 
         print(
             f"TID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | DATA: {len(data)}")
@@ -107,10 +108,17 @@ class Sender:
 
                 ack = reply.decode()
 
+                rate = (seq*rate + time.time() - t0) / \
+                    (seq + 1) if rate != 0 else time.time() - t0
+                if rate != 0:
+                    self.sock.settimeout(rate+1)
+
+                eta = ((len(data) - sent) / size) * rate
+
                 if self.verifyAck(seqID, ack, packet):
-                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
+                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | ETA: {eta:5.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
                 else:
-                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
+                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | ETA: {eta:5.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
 
                 target = target if elapsed < target else 120
                 sent += size
@@ -123,18 +131,13 @@ class Sender:
 
                 limit = size if size != last else len(data)
 
-                rate = (seq*rate + time.time() - t0) / \
-                    (seq + 1) if rate != 0 else time.time() - t0
-                if rate != 0:
-                    self.sock.settimeout(rate+1)
-
             except socket.timeout:
                 try:
                     reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
                 except socket.timeout:
                     limit = size if size != last else len(data)
 
-                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
+                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | ETA: {eta:5.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
 
                     size = max(min(int(size * 0.5), size-1), last)
 
