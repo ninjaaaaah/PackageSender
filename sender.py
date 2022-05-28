@@ -98,7 +98,7 @@ class Sender:
             self.sock.sendto(
                 packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
 
-            # print(f"[ {colors.TOP}{seqID}{colors.END} ] ")
+            print(f"[ {colors.TOP}{seqID}{colors.END} ] ")
 
             t0 = time.time()
             try:
@@ -140,8 +140,8 @@ class Sender:
 
             finally:
                 elapsed = time.time() - self.timer
-                # print("\033[A                             \033[A")
-                # print(output)
+                print("\033[A                             \033[A")
+                print(output)
                 # open(f"transactions/{self.TID}.log", "a").write(f"{output}\n")
 
         elapsed = time.time() - self.timer
@@ -177,7 +177,7 @@ class Sender:
 args = parseArguments()
 sender = Sender(args)
 for i in range(args.testcases):
-    # sender.downloadPackage()
+    sender.downloadPackage()
     sender.sendIntentMessage()
     if sender.TID != "Existing alive transaction":
         sender.sendPackage()
