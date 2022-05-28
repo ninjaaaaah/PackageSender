@@ -139,7 +139,6 @@ class Sender:
                 size = max(min(int(size * 0.9), size-1), last)
 
             finally:
-
                 elapsed = time.time() - self.timer
                 print("\033[A                             \033[A")
                 print(output)
