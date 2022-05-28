@@ -120,9 +120,7 @@ class Sender:
                     output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | ETA: {eta:6.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
 
                 sent += size
-
                 last = size
-
                 elapsed = time.time() - self.timer
                 target = target if elapsed < target else 120
                 rem_time = target - elapsed
@@ -132,17 +130,12 @@ class Sender:
                 seq += 1
 
             except socket.timeout:
-                try:
-                    reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
-                    continue
-                except socket.timeout:
+                eta = elapsed + rate + ((len(data) - sent) / size) * rate
+                limit = size if size != last else len(data)
 
-                    eta = elapsed + rate + ((len(data) - sent) / size) * rate
-                    limit = size if size != last else len(data)
+                output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | ETA: {eta:6.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
 
-                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | ETA: {eta:6.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
-
-                    size = max(min(int(size * 0.5), size-1), last)
+                size = max(min(int(size * 0.5), size-1), last)
 
             finally:
 
