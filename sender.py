@@ -106,26 +106,13 @@ class Sender:
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
                 cons = 0
-                t1 = time.time()
-
-                duration = t1 - t0
-
-                ack = reply.decode()
-
-                if self.verifyAck(seqID, ack, packet):
-                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
-                else:
-                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
-
                 success = True
 
             except socket.timeout:
-                t1 = time.time()
-                duration = t1 - t0
-
                 success = False
 
             finally:
+                duration = time.time() - t0
                 rate = (seq*rate + duration) / \
                     (seq + 1) if rate != 0 else duration
                 if rate != 0:
@@ -134,6 +121,13 @@ class Sender:
                 elapsed = time.time() - self.timer
 
                 if success:
+                    ack = reply.decode()
+
+                    if self.verifyAck(seqID, ack, packet):
+                        output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
+                    else:
+                        output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
+
                     target = target if elapsed < target else 120
                     sent += size
 
