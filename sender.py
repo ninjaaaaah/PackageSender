@@ -125,7 +125,7 @@ class Sender:
 
                 last = size
                 size = max(math.ceil((len(data)-sent) /
-                                     math.ceil((target - (time.time() - t0)) / math.floor(rate+1))), last)
+                                     math.ceil((target - (time.time() - self.timer)) / math.floor(rate+1))), last)
                 size = size if size < limit else (last+limit) // 2
                 seq += 1
 
