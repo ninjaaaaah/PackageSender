@@ -134,6 +134,7 @@ class Sender:
             except socket.timeout:
                 try:
                     reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
+                    continue
                 except socket.timeout:
 
                     eta = elapsed + rate + ((len(data) - sent) / size) * rate
