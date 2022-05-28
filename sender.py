@@ -135,7 +135,7 @@ class Sender:
 
                 output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | ETA: {eta:6.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
 
-                size = max(min(int(size * 0.5), size-1), last)
+                size = max(min(int(size * 0.9), size-1), last)
 
             finally:
 
