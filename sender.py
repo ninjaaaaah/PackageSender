@@ -181,7 +181,7 @@ for i in range(args.testcases):
     sender.downloadPackage()
     sender.sendIntentMessage()
     if sender.TID != "Existing alive transaction":
-        sender.sendPackage()
+        # sender.sendPackage()
         sender.waitEnd()
         sender.log()
     else:
