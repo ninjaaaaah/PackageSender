@@ -141,8 +141,8 @@ class Sender:
             finally:
 
                 elapsed = time.time() - self.timer
-                # print("\033[A                             \033[A")
-                # print(output)
+                print("\033[A                             \033[A")
+                print(output)
                 # open(f"transactions/{self.TID}.log", "a").write(f"{output}\n")
 
         elapsed = time.time() - self.timer
