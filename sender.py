@@ -127,6 +127,10 @@ class Sender:
                     self.sock.settimeout(rate+3)
 
             except socket.timeout:
+                try:
+                    reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
+                except socket.timeout:
+                    pass
 
                 limit = size if size != last else len(data)
 
