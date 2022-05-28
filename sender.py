@@ -103,6 +103,7 @@ class Sender:
             t0 = time.time()
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
+                limit = size if size != last else len(data)
                 cons = 0
 
                 ack = reply.decode()
