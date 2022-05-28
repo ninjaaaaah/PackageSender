@@ -75,9 +75,8 @@ class Sender:
         cons = 0
         done = False
         target = 90
+        status = None
         output = ""
-        duration = 0
-        success = None
 
         print(
             f"TID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | DATA: {len(data)}")
@@ -99,51 +98,48 @@ class Sender:
             self.sock.sendto(
                 packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
 
-            t0 = time.time()
-
             print(f"[ {colors.TOP}{seqID}{colors.END} ] ")
 
+            t0 = time.time()
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
                 cons = 0
-                success = True
+
+                ack = reply.decode()
+
+                if self.verifyAck(seqID, ack, packet):
+                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | LEN: {size:2} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
+                else:
+                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | LEN: {size:2} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
+
+                target = target if elapsed < target else 120
+                sent += size
+
+                last = size
+                size = max(math.ceil((len(data)-sent) /
+                                     math.ceil((target-elapsed) / math.floor(rate+1))), last)
+                size = size if size < limit else (last+limit) // 2
+                seq += 1
 
             except socket.timeout:
-                success = False
+
+                limit = size if size != last else len(data)
+
+                size = max(min(int(size * 0.5), size-1), last)
+
+                output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | LEN: {size:2} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
+
+                cons += 1
+                if cons == 5:
+                    break
 
             finally:
-                duration = time.time() - t0
-                rate = (seq*rate + duration) / \
-                    (seq + 1) if rate != 0 else duration
+                rate = (seq*rate + time.time() - t0) / \
+                    (seq + 1) if rate != 0 else time.time() - t0
                 if rate != 0:
                     self.sock.settimeout(rate+3)
 
                 elapsed = time.time() - self.timer
-
-                if success:
-                    ack = reply.decode()
-
-                    if self.verifyAck(seqID, ack, packet):
-                        output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
-                    else:
-                        output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
-
-                    target = target if elapsed < target else 120
-                    sent += size
-
-                    last = size
-                    size = max(math.ceil((len(data)-sent) /
-                                         math.ceil((target-elapsed) / math.floor(rate+1))), last)
-                    size = size if size < limit else (last+limit) // 2
-                    seq += 1
-                else:
-                    limit = size if size != last else len(data)
-                    size = max(min(int(size * 0.5), size-1), last)
-                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | LEN: {size:2} | RTT: {duration:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
-                    cons += 1
-                    if cons == 5:
-                        break
-
                 print("\033[A                             \033[A")
                 print(output)
                 open(f"transactions/{self.TID}.log", "a").write(f"{output}\n")
