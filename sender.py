@@ -163,11 +163,11 @@ class Sender:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
                 ack = reply.decode()
 
-                if self.rate != 0:
-                    self.sock.settimeout(math.ceil(self.rate))
-
                 self.rate = (self.seq*self.rate + time.time() - t0) / \
                     (self.seq + 1) if self.rate != 0 else time.time() - t0
+
+                if self.rate != 0:
+                    self.sock.settimeout(math.ceil(self.rate))
 
                 self.sent += self.size
                 self.last = self.size
