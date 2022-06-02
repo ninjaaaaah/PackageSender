@@ -163,20 +163,7 @@ class Sender:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
                 ack = reply.decode()
 
-                self.rate = (self.seq*self.rate + time.time() - t0) / \
-                    (self.seq + 1) if self.rate != 0 else time.time() - t0
-
-                if self.rate != 0:
-                    self.sock.settimeout(math.ceil(self.rate))
-
-                self.sent += self.size
-                self.last = self.size
-                self.elapsed = time.time() - self.timer
-                self.eta = self.elapsed + \
-                    ((self.length - self.sent) / self.size) * self.rate
-                self.target = self.target if self.elapsed < self.target else 120
-                self.updateSize()
-                self.seq += 1
+                self.updateParameters()
 
                 if self.verifyAck(seqID, ack, packet):
                     self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | ETA: {self.eta:6.2f}s | LEN: {self.last:2} | LIM: {self.limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
@@ -205,6 +192,24 @@ class Sender:
         code = colors.ACK if self.success else colors.ERR
         self.result = f"| {colors.INF}{colors.EMP}{self.TID}{colors.END} | {code}{self.status.center(7)}{colors.END} | {color}{self.elapsed:6.2f}{colors.END} |"
         print(self.result)
+
+    def updateParameters(self):
+        self.updateRate()
+        self.sent += self.size
+        self.last = self.size
+        self.elapsed = time.time() - self.timer
+        self.eta = self.elapsed + \
+            ((self.length - self.sent) / self.size) * self.rate
+        self.target = self.target if self.elapsed < self.target else 120
+        self.updateSize()
+        self.seq += 1
+
+    def updateRate(self):
+        self.rate = (self.seq*self.rate + time.time() - t0) / \
+                    (self.seq + 1) if self.rate != 0 else time.time() - t0
+
+        if self.rate != 0:
+            self.sock.settimeout(math.ceil(self.rate))
 
     def updateSize(self):
         rem_time = self.target - self.elapsed
