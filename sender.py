@@ -173,8 +173,7 @@ class Sender:
             except socket.timeout:
                 self.eta = self.elapsed + self.rate + \
                     ((self.length - self.sent) / self.size) * self.rate
-                self.limit = self.size if self.size != self.last else len(
-                    self.data)
+                self.limit = self.size if self.size != self.last else self.length
 
                 self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | ETA: {self.eta:6.2f}s | LEN: {self.size:2} | LIM: {self.limit:4} | RTT: {time.time() - self.initial:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
 
@@ -204,8 +203,8 @@ class Sender:
         self.updateSize()
         self.seq += 1
 
-    def updateRate(self, self.initial):
-        self.rate = (self.seq*self.rate + time.time() - self.initial) / \
+    def updateRate(self):
+        self.rate = (self.seq*self.rate + (time.time() - self.initial)) / \
                     (self.seq + 1) if self.rate != 0 else time.time() - self.initial
 
         if self.rate != 0:
