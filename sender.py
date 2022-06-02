@@ -134,7 +134,7 @@ class Sender:
         self.target = 95
         self.status = None
         self.output = ""
-        self.eta = 0
+        self.eta = 99999
 
         print(
             f"TID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | DATA: {self.length}")
