@@ -178,9 +178,9 @@ class Sender:
                     (self.seq + 1) if self.rate != 0 else time.time() - t0
 
                 if self.verifyAck(seqID, ack, packet):
-                    self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | ETA: {self.eta:6.2f}s | LEN: {self.size:2} | LIM: {self.limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
+                    self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | ETA: {self.eta:6.2f}s | LEN: {self.last:2} | LIM: {self.limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
                 else:
-                    self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | ETA: {self.eta:6.2f}s | LEN: {self.size:2} | LIM: {self.limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
+                    self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | ETA: {self.eta:6.2f}s | LEN: {self.last:2} | LIM: {self.limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
 
             except socket.timeout:
                 self.eta = self.elapsed + self.rate + \
