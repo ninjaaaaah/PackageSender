@@ -166,6 +166,9 @@ class Sender:
                 if self.rate != 0:
                     self.sock.settimeout(math.ceil(self.rate))
 
+                self.rate = (self.seq*self.rate + time.time() - t0) / \
+                    (self.seq + 1) if self.rate != 0 else time.time() - t0
+
                 self.sent += self.size
                 self.last = self.size
                 self.elapsed = time.time() - self.timer
@@ -174,8 +177,6 @@ class Sender:
                 self.target = self.target if self.elapsed < self.target else 120
                 self.updateSize()
                 self.seq += 1
-                self.rate = (self.seq*self.rate + time.time() - t0) / \
-                    (self.seq + 1) if self.rate != 0 else time.time() - t0
 
                 if self.verifyAck(seqID, ack, packet):
                     self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | ETA: {self.eta:6.2f}s | LEN: {self.last:2} | LIM: {self.limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
