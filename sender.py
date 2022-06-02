@@ -158,7 +158,7 @@ class Sender:
 
             print(f"[ {colors.TOP}{seqID}{colors.END} ] ")
 
-            t0 = time.time()
+            self.initial = time.time()
             try:
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
                 ack = reply.decode()
@@ -166,9 +166,9 @@ class Sender:
                 self.updateParameters()
 
                 if self.verifyAck(seqID, ack, packet):
-                    self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | ETA: {self.eta:6.2f}s | LEN: {self.last:2} | LIM: {self.limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
+                    self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | ETA: {self.eta:6.2f}s | LEN: {self.last:2} | LIM: {self.limit:4} | RTT: {time.time() - self.initial:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
                 else:
-                    self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | ETA: {self.eta:6.2f}s | LEN: {self.last:2} | LIM: {self.limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
+                    self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | ETA: {self.eta:6.2f}s | LEN: {self.last:2} | LIM: {self.limit:4} | RTT: {time.time() - self.initial:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
 
             except socket.timeout:
                 self.eta = self.elapsed + self.rate + \
@@ -176,7 +176,7 @@ class Sender:
                 self.limit = self.size if self.size != self.last else len(
                     self.data)
 
-                self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | ETA: {self.eta:6.2f}s | LEN: {self.size:2} | LIM: {self.limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
+                self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | ETA: {self.eta:6.2f}s | LEN: {self.size:2} | LIM: {self.limit:4} | RTT: {time.time() - self.initial:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
 
                 self.size = max(
                     min(int(self.size * 0.9), self.size-1), self.last)
@@ -204,9 +204,9 @@ class Sender:
         self.updateSize()
         self.seq += 1
 
-    def updateRate(self):
-        self.rate = (self.seq*self.rate + time.time() - t0) / \
-                    (self.seq + 1) if self.rate != 0 else time.time() - t0
+    def updateRate(self, self.initial):
+        self.rate = (self.seq*self.rate + time.time() - self.initial) / \
+                    (self.seq + 1) if self.rate != 0 else time.time() - self.initial
 
         if self.rate != 0:
             self.sock.settimeout(math.ceil(self.rate))
