@@ -83,7 +83,7 @@ class Sender:
 
         self.sock.settimeout(15)
         while True:
-            if time.time() - self.timer > 120:
+            if elapsed > 120:
                 break
 
             if sent >= len(data):
@@ -121,7 +121,7 @@ class Sender:
                 sent += size
                 last = size
                 elapsed = time.time() - self.timer
-                target = target if elapsed < target else 120
+                target = target if elapsed < target else 100
                 rem_time = target - elapsed
                 rem_data = (len(data)-sent)
                 if eta > 94:
@@ -143,7 +143,6 @@ class Sender:
                 elapsed = time.time() - self.timer
                 print("\033[A                             \033[A")
                 print(output)
-                # open(f"transactions/{self.TID}.log", "a").write(f"{output}\n")
 
         elapsed = time.time() - self.timer
         color = colors.ACK if elapsed < 95 else colors.NON if elapsed < 100 else colors.ERR
