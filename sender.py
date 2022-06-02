@@ -8,6 +8,22 @@ import hashlib
 PID = "95b59f86"
 SENDER_PORT = 6716
 
+''' 
+Parse Arguments Function
+---
+This function parses the arguments passed to the program and returns them as a dictionary. 
+
+FLAGS:
+? -f, --file, the path directory of the file to send
+? -a, --address, the address of the server
+? -s, --receiver_port, the port number used by the receiver
+? -c, --sender_port, the port number used by the sender
+? -i, --id, the unique identifier
+? -t, --tests, the number of tests to be used
+? -d, --debug, the debug flag
+
+'''
+
 
 def parseArguments():
     parser = argparse.ArgumentParser()
@@ -21,10 +37,20 @@ def parseArguments():
                         help="Port number used by the sender", default=9000)
     parser.add_argument("-i", "--id", type=str,
                         help="Unique Identifier", default=PID)
-    parser.add_argument("-t", "--testcases", type=int,
-                        help="Number of Testcases", default=1)
+    parser.add_argument("-t", "--tests", type=int,
+                        help="Number of tests", default=1)
+    parser.add_argument("-d", "--debug", type=bool,
+                        help="Toggle debug mode", default=False)
     args = parser.parse_args()
     return args
+
+
+''' 
+Colors Class
+---
+This a helper class used to print colored text for debugging.
+? Class will only be used if the debug flag is active 
+'''
 
 
 class colors:
@@ -37,7 +63,20 @@ class colors:
     EMP = '\033[1m'
 
 
+'''
+Sender Class
+---
+This class contains all the methods used in the UDP connection with the server.
+'''
+
+
 class Sender:
+    ''' 
+    Initialize Method
+    ---
+    This method initializes the UDP connection with the server with the command liine arguments provided.
+    '''
+
     def __init__(self, args) -> None:
         self.PID = PID
         self.SENDER_PORT = SENDER_PORT
@@ -48,13 +87,25 @@ class Sender:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(('', self.RECEIVER_PORT_NO))
 
-    # Downloading the payload
+    ''' 
+    Download Package Method
+    ---
+    This method downloads the package from the server.
+    ? This method would only be used in debug mode for automating the testing process.
+    '''
+
     def downloadPackage(self):
         URL = f"http://3.0.248.41:5000/get_data?student_id={self.PID}"
         response = requests.get(URL)
         open(self.FILE_NAME, "wb").write(response.content)
 
-    # Sending an Intent Message
+    '''
+    Send Intent Message Method
+    ---
+    This method sends the intent message to the server and receives a transaction ID as a response.
+    The transaction ID will be saved to the class variables.
+    '''
+
     def sendIntentMessage(self):
         self.timer = time.time()
         intent = f"ID{self.PID}".encode()
@@ -62,38 +113,45 @@ class Sender:
         data, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
         self.TID = data.decode()
 
+    '''
+    Send Package Method
+    ---
+    This method sends the package to the server.
+    '''
+
     def sendPackage(self):
         self.file = open(f"{self.PID}.txt", "r")
-        data = self.file.read()
-        sent = 0
-        size = 1
-        rate = 0
-        seq = 0
-        last = 0
-        limit = len(data)
-        elapsed = 0
-        done = False
-        target = 95
-        status = None
-        output = ""
-        eta = 0
+        self.data = self.file.read()
+        self.length = len(self.data)
+        self.sent = 0
+        self.size = 1
+        self.rate = 0
+        self.seq = 0
+        self.last = 0
+        self.limit = self.length
+        self.elapsed = 0
+        self.success = False
+        self.target = 95
+        self.status = None
+        self.output = ""
+        self.eta = 0
 
         print(
-            f"TID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | DATA: {len(data)}")
+            f"TID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | DATA: {self.length}")
 
         self.sock.settimeout(15)
         while True:
-            if elapsed > 120:
+            if self.elapsed > 120:
                 break
 
-            if sent >= len(data):
-                done = True
+            if self.sent >= self.length:
+                self.success = True
                 break
 
-            seqID = f"{seq}".zfill(7)
-            isLast = 1 if sent + size >= len(data) else 0
+            seqID = f"{self.seq}".zfill(7)
+            isLast = 1 if self.sent + self.size >= self.length else 0
 
-            packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{data[sent:sent+size]}"
+            packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{self.data[self.sent:self.sent+self.size]}"
 
             self.sock.sendto(
                 packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
@@ -106,49 +164,51 @@ class Sender:
 
                 ack = reply.decode()
 
-                rate = (seq*rate + time.time() - t0) / \
-                    (seq + 1) if rate != 0 else time.time() - t0
-                elapsed = time.time() - self.timer
-                eta = elapsed + ((len(data) - sent) / size) * rate
-                if rate != 0:
-                    self.sock.settimeout(math.ceil(rate))
+                self.sent += self.size
+                self.last = self.size
+                self.elapsed = time.time() - self.timer
+                self.eta = self.elapsed + \
+                    ((self.length - self.sent) / self.size) * self.rate
+                self.target = self.target if self.elapsed < self.target else 120
+                rem_time = self.target - self.elapsed
+                rem_data = self.length-self.sent
+                if self.eta > self.target:
+                    self.size = max(math.ceil(
+                        (rem_data / rem_time) * self.rate), self.last+1)
+                    self.size = self.size if self.size < self.limit else min(math.floor(
+                        (self.seq*self.last+self.limit) / (self.seq+1)), self.limit-1)
+                self.seq += 1
+                self.rate = (self.seq*self.rate + time.time() - t0) / \
+                    (self.seq + 1) if self.rate != 0 else time.time() - t0
 
+                if self.rate != 0:
+                    self.sock.settimeout(math.ceil(self.rate))
                 if self.verifyAck(seqID, ack, packet):
-                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | ETA: {eta:6.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
+                    self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | ETA: {self.eta:6.2f}s | LEN: {self.size:2} | LIM: {self.limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
                 else:
-                    output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | ETA: {eta:6.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent+size}/{len(data)}{colors.END}"
-
-                sent += size
-                last = size
-                elapsed = time.time() - self.timer
-                target = target if elapsed < target else 100
-                rem_time = target - elapsed
-                rem_data = len(data)-sent
-                if eta > 94:
-                    size = max(math.ceil(
-                        (rem_data / rem_time) * rate), last+1)
-                    size = size if size < limit else min(math.floor(
-                        (seq*last+limit) / (seq+1)), limit-1)
-                seq += 1
+                    self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | ETA: {self.eta:6.2f}s | LEN: {self.size:2} | LIM: {self.limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
 
             except socket.timeout:
-                eta = elapsed + rate + ((len(data) - sent) / size) * rate
-                limit = size if size != last else len(data)
+                self.eta = self.elapsed + self.rate + \
+                    ((self.length - self.sent) / self.size) * self.rate
+                self.limit = self.size if self.size != self.last else len(
+                    self.data)
 
-                output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | ETA: {eta:6.2f}s | LEN: {size:2} | LIM: {limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {rate:5.2f} | COM: {sent}/{len(data)}{colors.END}"
+                self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | ETA: {self.eta:6.2f}s | LEN: {self.size:2} | LIM: {self.limit:4} | RTT: {time.time() - t0:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
 
-                size = max(min(int(size * 0.9), size-1), last)
+                self.size = max(
+                    min(int(self.size * 0.9), self.size-1), self.last)
 
             finally:
-                elapsed = time.time() - self.timer
+                self.elapsed = time.time() - self.timer
                 print("\033[A                             \033[A")
-                print(output)
+                print(self.output)
 
-        elapsed = time.time() - self.timer
-        color = colors.ACK if elapsed < 95 else colors.NON if elapsed < 100 else colors.ERR
-        status = 'SUCCESS' if done else 'FAIL'
-        code = colors.ACK if done else colors.ERR
-        self.result = f"| {colors.INF}{colors.EMP}{self.TID}{colors.END} | {code}{status.center(7)}{colors.END} | {color}{elapsed:6.2f}{colors.END} |"
+        self.elapsed = time.time() - self.timer
+        color = colors.ACK if self.elapsed < 95 else colors.NON if self.elapsed < 100 else colors.ERR
+        self.status = 'SUCCESS' if self.success else 'FAIL'
+        code = colors.ACK if self.success else colors.ERR
+        self.result = f"| {colors.INF}{colors.EMP}{self.TID}{colors.END} | {code}{self.status.center(7)}{colors.END} | {color}{self.elapsed:6.2f}{colors.END} |"
         print(self.result)
 
     def verifyAck(self, seqID, ack, packet):
