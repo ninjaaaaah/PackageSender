@@ -172,13 +172,7 @@ class Sender:
                 self.eta = self.elapsed + \
                     ((self.length - self.sent) / self.size) * self.rate
                 self.target = self.target if self.elapsed < self.target else 120
-                rem_time = self.target - self.elapsed
-                rem_data = self.length-self.sent
-                if self.eta > self.target:
-                    self.size = max(math.ceil(
-                        (rem_data / rem_time) * self.rate), self.last+1)
-                    self.size = self.size if self.size < self.limit else min(math.floor(
-                        (self.seq*self.last+self.limit) / (self.seq+1)), self.limit-1)
+                self.updateSize()
                 self.seq += 1
                 self.rate = (self.seq*self.rate + time.time() - t0) / \
                     (self.seq + 1) if self.rate != 0 else time.time() - t0
@@ -211,6 +205,15 @@ class Sender:
         self.result = f"| {colors.INF}{colors.EMP}{self.TID}{colors.END} | {code}{self.status.center(7)}{colors.END} | {color}{self.elapsed:6.2f}{colors.END} |"
         print(self.result)
 
+    def updateSize(self):
+        rem_time = self.target - self.elapsed
+        rem_data = self.length-self.sent
+        if self.eta > self.target:
+            self.size = max(math.ceil(
+                (rem_data / rem_time) * self.rate), self.last+1)
+            self.size = self.size if self.size < self.limit else min(math.floor(
+                (self.seq*self.last+self.limit) / (self.seq+1)), self.limit-1)
+
     def verifyAck(self, seqID, ack, packet):
         md5 = self.compute_checksum(packet)
         correct = f"ACK{seqID}TXN{self.TID}MD5{md5}"
@@ -236,7 +239,7 @@ class Sender:
 
 args = parseArguments()
 sender = Sender(args)
-for i in range(args.testcases):
+for i in range(args.test):
     sender.downloadPackage()
     sender.sendIntentMessage()
     if sender.TID != "Existing alive transaction":
