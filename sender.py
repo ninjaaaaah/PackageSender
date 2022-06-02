@@ -107,16 +107,31 @@ class Sender:
     '''
 
     def sendIntentMessage(self):
-        self.timer = time.time()
         intent = f"ID{self.PID}".encode()
         self.sock.sendto(intent, (self.IP_ADDRESS, self.SENDER_PORT_NO))
         data, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
+        self.timer = time.time()
         self.TID = data.decode()
 
     '''
     Send Package Method
     ---
     This method sends the package to the server.
+
+    VARIABLES:
+    ? self.file - the file to be sent
+    ? self.data - the data to be sent
+    ? self.length - the length of the data
+    ? self.size - the size parameter of the sender
+    ? self.seq - the sequence number of the package
+    ? self.last - the last successful size parameter
+    ? self.limit - the maximum size parameter
+    ? self.elapsed - the time elapsed from establishing an intent message
+    ? self.success - determines if the package was successfully sent
+    ? self.target - the time limit for the sender
+    ? self.status - used for printing to console, only used on debug mode
+    ? self.output - used for printing to console, only used on debug mode
+    ? self.eta - the expected time of arrival of the package to the receiver
     '''
 
     def sendPackage(self):
