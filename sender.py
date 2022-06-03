@@ -430,7 +430,7 @@ class Sender:
         result = f"| {colors.INF}{colors.EMP}{self.TID}{colors.END} | {code}{status.center(7)}{colors.END} | {color}{self.elapsed:6.2f}{colors.END} |"
         if self.debug:
             print(result)
-            open("log.txt", "w").write(result)
+            open("log.txt", "a").write(f"{result}\n")
 
 
 args = parseArguments()
