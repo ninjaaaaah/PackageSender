@@ -177,8 +177,8 @@ class Sender:
             packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{self.data[self.sent:self.sent+self.size]}"
 
             '''
-            sender will send the packet to the server.
-            if in debug mode, this will be logged to the terminal.
+            Sender will send the packet to the server.
+            Then, if in debug mode, this will be logged to the terminal.
             '''
             self.sock.sendto(
                 packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
@@ -186,7 +186,7 @@ class Sender:
                 print(f"[ {colors.TOP}{seqID}{colors.END} ] ")
 
             '''
-            starts the timer for the sender to calculate the RTT of the packet.
+            Starts the timer for the sender to calculate the RTT of the packet.
             '''
             self.initial = time.time()
 
@@ -238,6 +238,13 @@ class Sender:
 
         self.log()
 
+    '''
+    Check Guard Method
+    ---
+    This method checks if the sender has reached the end of the file or has used up the allocated transaction time.
+    Returns true if either is satisfied. 
+    '''
+
     def checkGuard(self):
         self.elapsed = time.time() - self.timer
         if self.elapsed > 120:
@@ -247,30 +254,69 @@ class Sender:
             self.success = True
             return True
 
+    '''
+    Update Parameters Method
+    ---
+    This method updates the parameters of the sender.
+    '''
+
     def updateParameters(self):
         self.updateRate()
+        self.updateSent()
+        self.updateETA()
+        self.updateSize()
+
+    '''
+    Update Sent Method
+    ---
+    This method updates the sent parameter of the sender.
+
+    Changes:
+    ---
+    ? self.sent - added with the current size since packet was ACKed.
+    ? self.last - set to the current size since packet was ACKed.
+    ? self.seq  - incremented by 1 since packet was ACKed.
+    '''
+
+    def updateSent(self):
         self.sent += self.size
         self.last = self.size
-        self.elapsed = time.time() - self.timer
-        rem_packets = math.ceil((self.length - self.sent) / self.size)
-        self.eta = self.elapsed + rem_packets * self.rate
-        self.target = self.target if self.elapsed < self.target else 120
-        self.updateSize()
         self.seq += 1
 
     '''
-    UpdateRate Method
+    Update ETA Method
+    ---
+    This method updates the eta parameter of the sender.
+
+    Computation:
+    ---
+    ? 1. Get the elapsed time from the initial time of initiating the transaction.
+    ? 2. Check if elapsed time is greater than the target time (90s). If so, set the elapsed time to the allocated time(120s).
+    ? 3. Get the remaining data left by subtracting the initial data length with the sent data length.
+    ? 4. Get the remaining packets left by dividing the remaining data by the size of the packet.
+    ? 5. Get the ETA by adding the elapsed time with the remaining packets multiplied by the rate of the packet.
+    '''
+
+    def updateETA(self):
+        self.elapsed = time.time() - self.timer
+        self.target = self.target if self.elapsed < self.target else 120
+        rem_data = self.length - self.sent
+        rem_packets = math.ceil(rem_data / self.size)
+        self.eta = self.elapsed + (rem_packets * self.rate)
+
+    '''
+    Update Rate Method
     ---
     This method updates the rate of the sender.
 
     Computation:
     ---
     This is an implementation of the Exponential Weighted Moving Average at Lec 11.
-     
-    1. Get the sample RTT by subtracting the initial time from the current time.
-    2. Get the estimated RTT by using the formula at Lec 11 slide #18.
-    3. Get the deviation of the estimated RTT by using the formula at Lec 11 slide #19.
-    4. Update the rate by using the formula at Lec 11 slide #20.
+
+    ? 1. Get the sample RTT by subtracting the initial time from the current time.
+    ? 2. Get the estimated RTT by using the formula at Lec 11 slide #18.
+    ? 3. Get the deviation of the estimated RTT by using the formula at Lec 11 slide #19.
+    ? 4. Update the rate by using the formula at Lec 11 slide #20.
     '''
 
     def updateRate(self):
@@ -291,7 +337,7 @@ class Sender:
             self.sock.settimeout(math.ceil(self.rate))
 
     '''
-    UpdateSize Method
+    Update Size Method
     ---
     This method updates the size of the packet to be sent.
 
@@ -314,9 +360,15 @@ class Sender:
             self.size = self.size if self.size < self.limit else self.limit - 1
 
     '''
-    VerifyAck Method
+    Verify ACK Method
     ---
     This method will verify the ack received from the server.
+
+    Computation:
+    ---
+    ? 1. Compute the expected Checksum by using the function provided in the project specs.
+    ? 2. Determine the right ACK to be received from the server by using the formatting provided in the project specs.
+    ? 3. Check if the received checksum is equal to the expected checksum.
     '''
 
     def verifyAck(self, seqID, ack, packet):
@@ -325,16 +377,16 @@ class Sender:
         return ack == correct
 
     '''
-    ComputeChecksum Method
+    Compute Checksum Method
     ---
-    This method will compute the checksum of the packet.
+    This method will compute the checksum of the packet and is provided in the project specs.
     '''
 
     def computeChecksum(self, packet):
         return hashlib.md5(packet.encode('utf-8')).hexdigest()
 
     '''
-    WaitEnd Method
+    Wait End Method
     ---
     This method will wait for the end of the allocated time for the transaction to end.
     '''
