@@ -184,8 +184,8 @@ class Sender:
             '''
             self.sock.sendto(
                 packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
-            if self.debug:
-                print(f"[ {colors.TOP}{seqID}{colors.END} ] ")
+            # if self.debug:
+            #     print(f"[ {colors.TOP}{seqID}{colors.END} ] ")
 
             '''
             Starts the timer for the sender to calculate the RTT of the packet.
@@ -236,7 +236,7 @@ class Sender:
             # Print the output variable to the terminal.
             finally:
                 if self.debug:
-                    print("\033[A                             \033[A")
+                    # print("\033[A                             \033[A")
                     print(self.output)
 
         self.log()
