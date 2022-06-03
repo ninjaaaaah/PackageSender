@@ -165,6 +165,11 @@ class Sender:
             print(
                 f"TID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | LENGTH: {self.length}")
 
+        '''
+        This line sets the initial timeout to 120s.
+        '''
+        self.sock.settimeout(120)
+
         while True:
             if self.checkGuard():
                 break
