@@ -8,10 +8,10 @@ import hashlib
 PID = "95b59f86"
 SENDER_PORT = 6716
 
-''' 
+'''
 Parse Arguments Function
 ---
-This function parses the arguments passed to the program and returns them as a dictionary. 
+This function parses the arguments passed to the program and returns them as a dictionary.
 
 FLAGS:
 ? -f, --file, the path directory of the file to send
@@ -45,11 +45,11 @@ def parseArguments():
     return args
 
 
-''' 
+'''
 Colors Class
 ---
 This a helper class used to print colored text for debugging.
-? Class will only be used if the debug flag is active 
+? Class will only be used if the debug flag is active
 '''
 
 
@@ -71,7 +71,7 @@ This class contains all the methods used in the UDP connection with the server.
 
 
 class Sender:
-    ''' 
+    '''
     Initialize Method
     ---
     This method initializes the UDP connection with the server with the command liine arguments provided.
@@ -88,7 +88,7 @@ class Sender:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(('', self.RECEIVER_PORT_NO))
 
-    ''' 
+    '''
     Download Package Method
     ---
     This method downloads the package from the server.
@@ -133,6 +133,8 @@ class Sender:
     ? self.status - used for printing to console, only used on debug mode
     ? self.output - used for printing to console, only used on debug mode
     ? self.eta - the expected time of arrival of the package to the receiver
+    ? self.estimatedRTT - the estimated round trip time
+    ? self.devRTT - the deviation of the estimated round trip time
     '''
 
     def sendPackage(self):
@@ -150,116 +152,225 @@ class Sender:
         self.target = 95
         self.status = None
         self.output = ""
-        self.eta = 99999
+        self.eta = 0
+        self.estimatedRTT = 0
+        self.devRTT = 0
 
+        '''
+        This line prints the TID and the length of the data to be sent in the terminal if in debug mode.
+        '''
         if self.debug:
             print(
-                f"TID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | DATA: {self.length}")
+                f"TID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | LENGTH: {self.length}")
 
-        self.sock.settimeout(15)
         while True:
-            if self.elapsed > 120:
+            if self.checkGuard():
                 break
 
-            if self.sent >= self.length:
-                self.success = True
-                break
-
+            '''
+            seqID   - the sequence number of the packet
+            isLast  - determines if this is the last packet of the file to be sent
+            packet  - the string of the message to be sent to the server
+            '''
             seqID = f"{self.seq}".zfill(7)
             isLast = 1 if self.sent + self.size >= self.length else 0
-
             packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{self.data[self.sent:self.sent+self.size]}"
 
+            '''
+            sender will send the packet to the server.
+            if in debug mode, this will be logged to the terminal.
+            '''
             self.sock.sendto(
                 packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
-
             if self.debug:
                 print(f"[ {colors.TOP}{seqID}{colors.END} ] ")
 
+            '''
+            starts the timer for the sender to calculate the RTT of the packet.
+            '''
             self.initial = time.time()
+
+            '''
+            Using try catch to catch the timeout exception.
+            '''
             try:
+                '''
+                Get a reply from the server. if reply doesn't come within the set timeout, the timeout exception will be raised.
+                Otherwise, the decoded reply will be saved to the variable ack.
+                '''
                 reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
                 ack = reply.decode()
 
+                '''
+                Updates the parameters of the sender.
+                '''
                 self.updateParameters()
 
+                '''
+                verify the ack received from the server and reflect the status of the packet to the output variable.
+                '''
                 if self.verifyAck(seqID, ack, packet):
                     self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | ETA: {self.eta:6.2f}s | LEN: {self.last:2} | LIM: {self.limit:4} | RTT: {time.time() - self.initial:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
                 else:
                     self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | ETA: {self.eta:6.2f}s | LEN: {self.last:2} | LIM: {self.limit:4} | RTT: {time.time() - self.initial:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
 
+            # Raise an exception if the timeout is reached.
             except socket.timeout:
-                self.eta = self.elapsed + self.rate + \
-                    ((self.length - self.sent) / self.size) * self.rate
+                # Compute for the remaining packets to recalibrate the eta.
+                rem_packets = math.ceil((self.length - self.sent) / self.size)
+                self.eta = self.elapsed + self.rate + rem_packets * self.rate
+
+                # Set the limit to the current size if size is not the last successful attempt.
                 self.limit = self.size if self.size != self.last else self.length
 
+                # Set the output variable to reflect the timeout.
                 self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | ETA: {self.eta:6.2f}s | LEN: {self.size:2} | LIM: {self.limit:4} | RTT: {time.time() - self.initial:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
 
+                # Update the size parameter to the last successful size.
                 self.size = max(
                     min(int(self.size * 0.9), self.size-1), self.last)
 
+            # Print the output variable to the terminal.
             finally:
-                self.elapsed = time.time() - self.timer
                 if self.debug:
                     print("\033[A                             \033[A")
                     print(self.output)
 
+        self.log()
+
+    def checkGuard(self):
         self.elapsed = time.time() - self.timer
-        color = colors.ACK if self.elapsed < 95 else colors.NON if self.elapsed < 100 else colors.ERR
-        self.status = 'SUCCESS' if self.success else 'FAIL'
-        code = colors.ACK if self.success else colors.ERR
-        self.result = f"| {colors.INF}{colors.EMP}{self.TID}{colors.END} | {code}{self.status.center(7)}{colors.END} | {color}{self.elapsed:6.2f}{colors.END} |"
-        if self.debug:
-            print(self.result)
+        if self.elapsed > 120:
+            return True
+
+        if self.sent >= self.length:
+            self.success = True
+            return True
 
     def updateParameters(self):
         self.updateRate()
         self.sent += self.size
         self.last = self.size
         self.elapsed = time.time() - self.timer
-        self.eta = self.elapsed + \
-            math.ceil((self.length - self.sent) / self.size) * self.rate
+        rem_packets = math.ceil((self.length - self.sent) / self.size)
+        self.eta = self.elapsed + rem_packets * self.rate
         self.target = self.target if self.elapsed < self.target else 120
         self.updateSize()
         self.seq += 1
 
-    def updateRate(self):
-        self.rate = (self.seq*self.rate + (time.time() - self.initial)) / \
-                    (self.seq + 1) if self.rate != 0 else time.time() - self.initial
+    '''
+    UpdateRate Method
+    ---
+    This method updates the rate of the sender.
 
+    Computation:
+    ---
+    This is an implementation of the Exponential Weighted Moving Average at Lec 11.
+     
+    1. Get the sample RTT by subtracting the initial time from the current time.
+    2. Get the estimated RTT by using the formula at Lec 11 slide #18.
+    3. Get the deviation of the estimated RTT by using the formula at Lec 11 slide #19.
+    4. Update the rate by using the formula at Lec 11 slide #20.
+    '''
+
+    def updateRate(self):
+        alpha = 0.125
+        beta = 0.25
+        sampleRTT = time.time() - self.initial
+
+        if self.estimatedRTT == 0:
+            self.estimatedRTT = sampleRTT
+        else:
+            self.estimatedRTT = (1 - alpha)*self.estimatedRTT + alpha*sampleRTT
+
+        self.devRTT = (1 - beta)*self.devRTT + beta * \
+            abs(sampleRTT - self.estimatedRTT)
+
+        self.rate = self.estimatedRTT + 4*self.devRTT
         if self.rate != 0:
             self.sock.settimeout(math.ceil(self.rate))
 
+    '''
+    UpdateSize Method
+    ---
+    This method updates the size of the packet to be sent.
+
+    Computation:
+    ---
+    ? 1. Get the remaining time left to achieve the target time. Do this by subtracting the target time to the time elapsed.
+    ? 2. Get the remaining packets to be sent. Do this by dividing the remaining length by the size of the packet.
+    ? 3. Check if the eta is greater than the target time.
+    ?    - If it is, set size to whichever is greater, the remaining packets times the rate or, the last successful ack incremented by one.
+    ?    - Then, check if the size is greater than the limit.
+    ?    - If it is, set the size to the limit-1.
+    '''
+
     def updateSize(self):
         rem_time = self.target - self.elapsed
-        rem_data = self.length-self.sent
+        rem_data = self.length - self.sent
+        rem_packets = math.ceil(rem_data / rem_time)
         if self.eta > self.target:
-            self.size = max(math.ceil(
-                (rem_data / rem_time) * self.rate), self.last+1)
-            self.size = self.size if self.size < self.limit else min(math.floor(
-                (self.seq*self.last+self.limit) / (self.seq+1)), self.limit-1)
+            self.size = max(math.ceil(rem_packets * self.rate), self.last + 1)
+            self.size = self.size if self.size < self.limit else self.limit - 1
+
+    '''
+    VerifyAck Method
+    ---
+    This method will verify the ack received from the server.
+    '''
 
     def verifyAck(self, seqID, ack, packet):
-        md5 = self.compute_checksum(packet)
+        md5 = self.computeChecksum(packet)
         correct = f"ACK{seqID}TXN{self.TID}MD5{md5}"
         return ack == correct
 
-    def compute_checksum(self, packet):
+    '''
+    ComputeChecksum Method
+    ---
+    This method will compute the checksum of the packet.
+    '''
+
+    def computeChecksum(self, packet):
         return hashlib.md5(packet.encode('utf-8')).hexdigest()
+
+    '''
+    WaitEnd Method
+    ---
+    This method will wait for the end of the allocated time for the transaction to end.
+    '''
 
     def waitEnd(self):
         while True:
             remaining = 130 - (time.time() - self.timer)
-            print(
-                f"{remaining:.2f}s | [{('█'*int(math.ceil(remaining/120 *10))).ljust(10)}]")
-            print("\033[A                             \033[A")
+            if self.debug:
+                print(
+                    f"{remaining:.2f}s | [{('█'*int(math.ceil(remaining/120 *10))).ljust(10)}]")
+                print("\033[A                             \033[A")
             if remaining <= 0:
                 break
         print("Transaction closed.")
         self.file.close()
 
+    '''
+    Log Method
+    ---
+    This method will log the transaction results to the log file.
+    
+    LOGGING VARIABLES:
+    ? Color variable - is used for coloring the outputs whether it passes the 95s mark or 120s mark.
+    ? Code variable  - is used for coloring the outputs for whether the packet was successfully sent or not.
+    ? self.status    - SUCCESS or FAIL. Used for printing to console, only used on debug mode
+    ? self.result    - Transaction result is used for printing to console, only used on debug mode
+    '''
+
     def log(self):
-        open('log.txt', 'a').write(f"{self.result}\n")
+        self.elapsed = time.time() - self.timer
+        color = colors.ACK if self.elapsed < 95 else colors.NON if self.elapsed < 120 else colors.ERR
+        code = colors.ACK if self.success else colors.ERR
+        status = 'SUCCESS' if self.success else 'FAIL'
+        result = f"| {colors.INF}{colors.EMP}{self.TID}{colors.END} | {code}{status.center(7)}{colors.END} | {color}{self.elapsed:6.2f}{colors.END} |"
+        if self.debug:
+            print(result)
 
 
 args = parseArguments()
