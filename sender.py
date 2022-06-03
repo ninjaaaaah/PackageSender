@@ -84,6 +84,7 @@ class Sender:
         self.SENDER_PORT_NO = args.sender_port
         self.RECEIVER_PORT_NO = args.receiver_port
         self.IP_ADDRESS = args.address
+        self.debug = args.debug
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(('', self.RECEIVER_PORT_NO))
 
@@ -151,8 +152,9 @@ class Sender:
         self.output = ""
         self.eta = 99999
 
-        print(
-            f"TID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | DATA: {self.length}")
+        if self.debug:
+            print(
+                f"TID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | DATA: {self.length}")
 
         self.sock.settimeout(15)
         while True:
@@ -171,7 +173,8 @@ class Sender:
             self.sock.sendto(
                 packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
 
-            print(f"[ {colors.TOP}{seqID}{colors.END} ] ")
+            if self.debug:
+                print(f"[ {colors.TOP}{seqID}{colors.END} ] ")
 
             self.initial = time.time()
             try:
@@ -197,15 +200,17 @@ class Sender:
 
             finally:
                 self.elapsed = time.time() - self.timer
-                print("\033[A                             \033[A")
-                print(self.output)
+                if self.debug:
+                    print("\033[A                             \033[A")
+                    print(self.output)
 
         self.elapsed = time.time() - self.timer
         color = colors.ACK if self.elapsed < 95 else colors.NON if self.elapsed < 100 else colors.ERR
         self.status = 'SUCCESS' if self.success else 'FAIL'
         code = colors.ACK if self.success else colors.ERR
         self.result = f"| {colors.INF}{colors.EMP}{self.TID}{colors.END} | {code}{self.status.center(7)}{colors.END} | {color}{self.elapsed:6.2f}{colors.END} |"
-        print(self.result)
+        if self.debug:
+            print(self.result)
 
     def updateParameters(self):
         self.updateRate()
