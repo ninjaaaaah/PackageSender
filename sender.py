@@ -244,8 +244,6 @@ class Sender:
                     # print("\033[A                             \033[A")
                     print(self.output)
 
-        self.log()
-
     '''
     Check Guard Method
     ---
@@ -432,6 +430,7 @@ class Sender:
         result = f"| {colors.INF}{colors.EMP}{self.TID}{colors.END} | {code}{status.center(7)}{colors.END} | {color}{self.elapsed:6.2f}{colors.END} |"
         if self.debug:
             print(result)
+            open("log.txt", "w").write(result)
 
 
 args = parseArguments()
@@ -441,7 +440,7 @@ for i in range(args.tests):
     sender.sendIntentMessage()
     if sender.TID != "Existing alive transaction":
         sender.sendPackage()
-        sender.waitEnd()
         sender.log()
+        sender.waitEnd()
     else:
         print("Existing alive transaction")
