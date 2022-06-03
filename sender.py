@@ -347,8 +347,9 @@ class Sender:
     Computation:
     ---
     ? 1. Get the remaining time left to achieve the target time. Do this by subtracting the target time to the time elapsed.
-    ? 2. Get the remaining packets to be sent. Do this by dividing the remaining length by the size of the packet.
-    ? 3. Check if the eta is greater than the target time.
+    ? 2. Get the remaining data left to send. Do this by subtracting the initial data length with the sent data length.
+    ? 3. Get the remaining packets to be sent. Do this by dividing the remaining time by the rate.
+    ? 4. Check if the eta is greater than the target time.
     ?    - If it is, set size to whichever is greater, the remaining packets times the rate or, the last successful ack incremented by one.
     ?    - Then, check if the size is greater than the limit.
     ?    - If it is, set the size to the limit-1.
