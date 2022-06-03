@@ -213,7 +213,7 @@ class Sender:
         self.last = self.size
         self.elapsed = time.time() - self.timer
         self.eta = self.elapsed + \
-            ((self.length - self.sent) / self.size) * self.rate
+            math.ceil((self.length - self.sent) / self.size) * self.rate
         self.target = self.target if self.elapsed < self.target else 120
         self.updateSize()
         self.seq += 1
