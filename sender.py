@@ -357,7 +357,7 @@ class Sender:
     def updateSize(self):
         rem_time = self.target - self.elapsed
         rem_data = self.length - self.sent
-        rem_packets = math.ceil(rem_data / rem_time)
+        rem_packets = math.ceil(rem_data / (rem_time/self.rate))
         if self.eta > self.target:
             self.size = max(math.ceil(rem_packets * self.rate), self.last + 1)
             self.size = self.size if self.size < self.limit else self.limit - 1
