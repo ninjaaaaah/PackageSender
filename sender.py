@@ -432,7 +432,7 @@ class Sender:
 args = parseArguments()
 sender = Sender(args)
 for i in range(args.tests):
-    # downloadPackage(args.file)
+    downloadPackage(args.file)
     sender.sendIntentMessage()
     if sender.TID != "Existing alive transaction":
         sender.sendPackage()
