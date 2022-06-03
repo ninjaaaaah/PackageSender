@@ -233,9 +233,9 @@ class Sender:
                 # Set the output variable to reflect the timeout.
                 self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | ETA: {self.eta:6.2f}s | LEN: {self.size:2} | LIM: {self.limit:4} | RTT: {time.time() - self.initial:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
 
-                # Update the size parameter to whichever is less, 90% of the current size or 1 packet less than the current packet size.
-                self.size = min(int(self.size * 0.9), self.size-1)
-                # Finalyl, sets the size to whichever is greater, the last ack'ed size or the size obtained from the previous line.
+                # Decrement the value of the size parameter
+                self.size -= 1
+                # Finally, sets the size to whichever is greater, the last ack'ed size or the size obtained from the previous line.
                 self.size = max(self.size, self.last)
 
             # Print the output variable to the terminal.
