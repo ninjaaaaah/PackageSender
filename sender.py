@@ -46,6 +46,20 @@ def parseArguments():
 
 
 '''
+Download Package Function
+---
+This method downloads the package from the server.
+? This method would only be used in debug mode for automating the testing process.
+'''
+
+
+def downloadPackage(file):
+    URL = f"http://54.169.121.89:5000/get_data?student_id={PID}"
+    response = requests.get(URL)
+    open(file, "wb").write(response.content)
+
+
+'''
 Colors Class
 ---
 This a helper class used to print colored text for debugging.
@@ -87,18 +101,6 @@ class Sender:
         self.debug = args.debug
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(('', self.RECEIVER_PORT_NO))
-
-    '''
-    Download Package Method
-    ---
-    This method downloads the package from the server.
-    ? This method would only be used in debug mode for automating the testing process.
-    '''
-
-    def downloadPackage(self):
-        URL = f"http://3.0.248.41:5000/get_data?student_id={self.PID}"
-        response = requests.get(URL)
-        open(self.FILE_NAME, "wb").write(response.content)
 
     '''
     Send Intent Message Method
@@ -207,7 +209,7 @@ class Sender:
                 self.updateParameters()
 
                 '''
-                verify the ack received from the server and reflect the status of the packet to the output variable.
+                Verify the ack received from the server and reflect the status of the packet to the output variable.
                 '''
                 if self.verifyAck(seqID, ack, packet):
                     self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | ETA: {self.eta:6.2f}s | LEN: {self.last:2} | LIM: {self.limit:4} | RTT: {time.time() - self.initial:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
@@ -226,9 +228,10 @@ class Sender:
                 # Set the output variable to reflect the timeout.
                 self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | ETA: {self.eta:6.2f}s | LEN: {self.size:2} | LIM: {self.limit:4} | RTT: {time.time() - self.initial:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
 
-                # Update the size parameter to the last successful size.
-                self.size = max(
-                    min(int(self.size * 0.9), self.size-1), self.last)
+                # Update the size parameter to whichever is less, 90% of the current size or 1 packet less than the current packet size.
+                self.size = min(int(self.size * 0.9), self.size-1)
+                # Finalyl, sets the size to whichever is greater, the last ack'ed size or the size obtained from the previous line.
+                self.size = max(self.size, self.last)
 
             # Print the output variable to the terminal.
             finally:
@@ -428,7 +431,7 @@ class Sender:
 args = parseArguments()
 sender = Sender(args)
 for i in range(args.tests):
-    sender.downloadPackage()
+    downloadPackage(args.file)
     sender.sendIntentMessage()
     if sender.TID != "Existing alive transaction":
         sender.sendPackage()
