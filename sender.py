@@ -410,8 +410,7 @@ class Sender:
         code = colors.ACK if self.success else colors.ERR
         status = 'SUCCESS' if self.success else 'FAIL'
         result = f"| {colors.INF}{colors.EMP}{self.TID}{colors.END} | {code}{status.center(7)}{colors.END} | {color}{self.elapsed:6.2f}{colors.END} |"
-        if self.debug:
-            print(result)
+        print(result)
         open("log.txt", "a").write(f"{result}\n")
 
 
