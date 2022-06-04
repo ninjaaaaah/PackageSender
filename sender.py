@@ -415,15 +415,16 @@ class Sender:
         open("log.txt", "a").write(f"{result}\n")
 
 
-args = parseArguments()
-sender = Sender(args)
-for i in range(args.tests):
-    if args.tests > 1:
-        downloadPackage(args.file)
-    sender.sendIntentMessage()
-    if sender.TID != "Existing alive transaction":
-        sender.sendPackage()
-        sender.log()
-        sender.waitEnd()
-    else:
-        print("Existing alive transaction")
+if __name__ == "__main__":
+    args = parseArguments()
+    sender = Sender(args)
+    for i in range(args.tests):
+        if args.tests > 1:
+            downloadPackage(args.file)
+        sender.sendIntentMessage()
+        if sender.TID != "Existing alive transaction":
+            sender.sendPackage()
+            sender.log()
+            sender.waitEnd()
+        else:
+            print("Existing alive transaction")
