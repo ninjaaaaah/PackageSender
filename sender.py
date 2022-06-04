@@ -158,16 +158,12 @@ class Sender:
         self.estimatedRTT = 0
         self.devRTT = 0
 
-        '''
-        This line prints the TID and the length of the data to be sent in the terminal if in debug mode.
-        '''
+        # This line prints the TID and the length of the data to be sent in the terminal if in debug mode.
         if self.debug:
             print(
                 f"TID: {colors.INF}{colors.EMP}{self.TID}{colors.END} | LENGTH: {self.length}")
 
-        '''
-        This line sets the initial timeout to 120s.
-        '''
+        # This line sets the initial timeout to 120s.
         self.sock.settimeout(120)
 
         while True:
@@ -183,23 +179,14 @@ class Sender:
             isLast = 1 if self.sent + self.size >= self.length else 0
             packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{self.data[self.sent:self.sent+self.size]}"
 
-            '''
-            Sender will send the packet to the server.
-            Then, if in debug mode, this will be logged to the terminal.
-            '''
+            # Sender will send the packet to the server.
             self.sock.sendto(
                 packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
-            # if self.debug:
-            #     print(f"[ {colors.TOP}{seqID}{colors.END} ] ")
 
-            '''
-            Starts the timer for the sender to calculate the RTT of the packet.
-            '''
+            # Starts the timer for the sender to calculate the RTT of the packet.
             self.initial = time.time()
 
-            '''
-            Using try catch to catch the timeout exception.
-            '''
+            # Using try catch to catch the timeout exception.
             try:
                 '''
                 Get a reply from the server. if reply doesn't come within the set timeout, the timeout exception will be raised.
@@ -241,7 +228,6 @@ class Sender:
             # Print the output variable to the terminal.
             finally:
                 if self.debug:
-                    # print("\033[A                             \033[A")
                     print(self.output)
 
     '''
@@ -275,7 +261,7 @@ class Sender:
     '''
     Update Sent Method
     ---
-    This method updates the sent parameter of the sender.
+    This method updates the sent, last, and seq variables of the sender class.
 
     Changes:
     ---
@@ -355,13 +341,13 @@ class Sender:
     ? 4. Check if the eta is greater than the target time.
     ?    - If it is, set size to whichever is greater, the remaining packets times the rate or, the last successful ack incremented by one.
     ?    - Then, check if the size is greater than the limit.
-    ?    - If it is, set the size to the limit-1.
+    ?    - If it is, set the size to the limit subtracted by 1.
     '''
 
     def updateSize(self):
         rem_time = self.target - self.elapsed
         rem_data = self.length - self.sent
-        rem_packets = math.floor(rem_time/self.rate)
+        rem_packets = math.ceil(rem_time/self.rate)
         if self.eta > self.target:
             self.size = max(math.ceil(rem_data / rem_packets), self.last + 1)
             self.size = self.size if self.size < self.limit else self.limit - 1
@@ -369,7 +355,7 @@ class Sender:
     '''
     Verify ACK Method
     ---
-    This method will verify the ack received from the server.
+    This method will verify the ack received from the server by comparing the supposed md5 hash of the ACK with the correct md5 hash of the packet.
 
     Computation:
     ---
@@ -401,10 +387,6 @@ class Sender:
     def waitEnd(self):
         while True:
             remaining = 130 - (time.time() - self.timer)
-            if self.debug:
-                print(
-                    f"{remaining:.2f}s | [{('█'*int(math.ceil(remaining/120 *10))).ljust(10)}]")
-                print("\033[A                             \033[A")
             if remaining <= 0:
                 break
         print("Transaction closed.")
@@ -415,7 +397,7 @@ class Sender:
     ---
     This method will log the transaction results to the log file.
     
-    LOGGING VARIABLES:
+    Variables:
     ? Color variable - is used for coloring the outputs whether it passes the 95s mark or 120s mark.
     ? Code variable  - is used for coloring the outputs for whether the packet was successfully sent or not.
     ? self.status    - SUCCESS or FAIL. Used for printing to console, only used on debug mode
@@ -436,7 +418,8 @@ class Sender:
 args = parseArguments()
 sender = Sender(args)
 for i in range(args.tests):
-    downloadPackage(args.file)
+    if args.debug:
+        downloadPackage(args.file)
     sender.sendIntentMessage()
     if sender.TID != "Existing alive transaction":
         sender.sendPackage()
