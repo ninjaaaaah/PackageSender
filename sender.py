@@ -349,7 +349,7 @@ class Sender:
         rem_data = self.length - self.sent
         rem_packets = math.ceil(rem_time/self.rate)
         if self.eta > self.target:
-            self.size = max(math.ceil(rem_data / rem_packets), self.last + 1)
+            self.size = max(math.ceil(rem_data / rem_packets)+1, self.last + 1)
             self.size = self.size if self.size < self.limit else self.limit - 1
 
     '''
