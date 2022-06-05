@@ -110,8 +110,8 @@ class Sender:
 
     def sendIntentMessage(self):
         intent = f"ID{self.PID}".encode()
-        self.sock.sendto(intent, (self.IP_ADDRESS, self.SERVER_PORT_NO))
-        data, _ = self.sock.recvfrom(self.CLIENT_PORT_NO)
+        self.sock.sendto(intent, (self.IP_ADDRESS, self.CLIENT_PORT_NO))
+        data, _ = self.sock.recvfrom(self.SERVER_PORT_NO)
         self.timer = time.time()
         self.TID = data.decode()
 
@@ -178,7 +178,7 @@ class Sender:
                 If reply doesn't come within the set timeout, the timeout exception will be raised.
                 Otherwise, the decoded reply will be saved to the variable ack.
                 '''
-                reply, _ = self.sock.recvfrom(self.CLIENT_PORT_NO)
+                reply, _ = self.sock.recvfrom(self.SERVER_PORT_NO)
                 ack = reply.decode()
 
                 '''
