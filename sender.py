@@ -170,7 +170,7 @@ class Sender:
             if self.checkGuard():
                 break
 
-            packet = self.sendPacket()
+            seqID, packet = self.sendPacket()
 
             # Using try catch to catch the timeout exception.
             try:
@@ -190,7 +190,7 @@ class Sender:
                 '''
                 Verify the ack received from the server and reflect the status of the packet to the output variable.
                 '''
-                if self.verifyAck(ack, packet):
+                if self.verifyAck(seqID, ack, packet):
                     self.output = f"[ {colors.TOP}{str(self.seq).zfill(7)}{colors.END} ] : {colors.ACK}ACK | ETA: {self.eta:6.2f}s | LEN: {self.last:2} | LIM: {self.limit:4} | RTT: {time.time() - self.initial:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
                 else:
                     self.output = f"[ {colors.TOP}{str(self.seq).zfill(7)}{colors.END} ] : {colors.ERR}ERR | ETA: {self.eta:6.2f}s | LEN: {self.last:2} | LIM: {self.limit:4} | RTT: {time.time() - self.initial:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
@@ -249,7 +249,7 @@ class Sender:
             packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
 
         self.initial = time.time()
-        return packet
+        return seqID, packet
 
     '''
     Update Parameters Method
@@ -369,8 +369,7 @@ class Sender:
     ? 3. Check if the received checksum is equal to the expected checksum.
     '''
 
-    def verifyAck(self, ack, packet):
-        seqID = f"{self.seq}".zfill(7)
+    def verifyAck(self, seqID, ack, packet):
         md5 = self.computeChecksum(packet)
         correct = f"ACK{seqID}TXN{self.TID}MD5{md5}"
         return ack == correct
