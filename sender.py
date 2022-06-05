@@ -170,21 +170,7 @@ class Sender:
             if self.checkGuard():
                 break
 
-            '''
-            seqID   - the sequence number of the packet
-            isLast  - determines if this is the last packet of the file to be sent
-            packet  - the string of the message to be sent to the server
-            '''
-            seqID = f"{self.seq}".zfill(7)
-            isLast = 1 if self.sent + self.size >= self.length else 0
-            packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{self.data[self.sent:self.sent+self.size]}"
-
-            # Sender will send the packet to the server.
-            self.sock.sendto(
-                packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
-
-            # Starts the timer for the sender to calculate the RTT of the packet.
-            self.initial = time.time()
+           self.constructPacket()
 
             # Using try catch to catch the timeout exception.
             try:
@@ -204,9 +190,9 @@ class Sender:
                 Verify the ack received from the server and reflect the status of the packet to the output variable.
                 '''
                 if self.verifyAck(seqID, ack, packet):
-                    self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ACK}ACK | ETA: {self.eta:6.2f}s | LEN: {self.last:2} | LIM: {self.limit:4} | RTT: {time.time() - self.initial:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
+                    self.output = f"[ {colors.TOP}{str(self.seq).zfill(7)}{colors.END} ] : {colors.ACK}ACK | ETA: {self.eta:6.2f}s | LEN: {self.last:2} | LIM: {self.limit:4} | RTT: {time.time() - self.initial:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
                 else:
-                    self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.ERR}ERR | ETA: {self.eta:6.2f}s | LEN: {self.last:2} | LIM: {self.limit:4} | RTT: {time.time() - self.initial:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
+                    self.output = f"[ {colors.TOP}{str(self.seq).zfill(7)}{colors.END} ] : {colors.ERR}ERR | ETA: {self.eta:6.2f}s | LEN: {self.last:2} | LIM: {self.limit:4} | RTT: {time.time() - self.initial:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
 
             # Raise an exception if the timeout is reached.
             except socket.timeout:
@@ -218,7 +204,7 @@ class Sender:
                 self.limit = self.size if self.size != self.last else self.length
 
                 # Set the output variable to reflect the timeout.
-                self.output = f"[ {colors.TOP}{seqID}{colors.END} ] : {colors.NON}NON | ETA: {self.eta:6.2f}s | LEN: {self.size:2} | LIM: {self.limit:4} | RTT: {time.time() - self.initial:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
+                self.output = f"[ {colors.TOP}{str(self.seq).zfill(7)}{colors.END} ] : {colors.NON}NON | ETA: {self.eta:6.2f}s | LEN: {self.size:2} | LIM: {self.limit:4} | RTT: {time.time() - self.initial:5.2f} | RAT: {self.rate:5.2f} | COM: {self.sent}/{self.length}{colors.END}"
 
                 # Decrement the value of the size parameter
                 self.size -= 1
@@ -245,6 +231,22 @@ class Sender:
         if self.sent >= self.length:
             self.success = True
             return True
+
+    '''
+    Construct Packet Method
+    ---
+    This method constructs the packet to be sent to the server and sends it through UDP socket.
+    The initial time would also be initiated here to compute for the RTT of a packet.
+    '''
+    def constructPacket(self):
+        seqID = f"{self.seq}".zfill(7)
+        isLast = 1 if self.sent + self.size >= self.length else 0
+        packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{self.data[self.sent:self.sent+self.size]}"
+
+        self.sock.sendto(
+            packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
+
+        self.initial = time.time()
 
     '''
     Update Parameters Method
