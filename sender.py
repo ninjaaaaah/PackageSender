@@ -170,7 +170,7 @@ class Sender:
             if self.checkGuard():
                 break
 
-           self.constructPacket()
+           self.sendPacket()
 
             # Using try catch to catch the timeout exception.
             try:
@@ -238,7 +238,8 @@ class Sender:
     This method constructs the packet to be sent to the server and sends it through UDP socket.
     The initial time would also be initiated here to compute for the RTT of a packet.
     '''
-    def constructPacket(self):
+
+    def sendPacket(self):
         seqID = f"{self.seq}".zfill(7)
         isLast = 1 if self.sent + self.size >= self.length else 0
         packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{self.data[self.sent:self.sent+self.size]}"
