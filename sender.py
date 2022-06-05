@@ -31,10 +31,10 @@ def parseArguments():
                         help="File to send", default=f"{PID}.txt")
     parser.add_argument("-a", "--address", type=str,
                         help="Server IP address",  default="10.0.7.141")
-    parser.add_argument("-s", "--server_port", type=int,
-                        help="Port number used by the receiver", default=9000)
-    parser.add_argument("-c", "--client_port", type=int,
-                        help="Port number used by the sender", default=SENDER_PORT)
+    parser.add_argument("-s", "--receiver_port", type=int,
+                        help="Port number used by the receiver", default=SENDER_PORT)
+    parser.add_argument("-c", "--sender_port", type=int,
+                        help="Port number used by the sender", default=9000)
     parser.add_argument("-i", "--id", type=str,
                         help="Unique Identifier", default=PID)
     parser.add_argument("-t", "--tests", type=int,
@@ -95,8 +95,8 @@ class Sender:
         self.PID = args.id
         self.SENDER_PORT = SENDER_PORT
         self.FILE_NAME = args.file
-        self.SENDER_PORT_NO = args.client_port
-        self.RECEIVER_PORT_NO = args.server_port
+        self.SENDER_PORT_NO = args.sender_port
+        self.RECEIVER_PORT_NO = args.receiver_port
         self.IP_ADDRESS = args.address
         self.debug = args.debug
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
