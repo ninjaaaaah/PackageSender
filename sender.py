@@ -95,7 +95,7 @@ class Sender:
         self.PID = args.id
         self.FILE_NAME = args.file
         self.RECEIVER_PORT = args.server_port
-        self.CLIENT_PORT = args.cklient_port
+        self.CLIENT_PORT = args.client_port
         self.IP_ADDRESS = args.address
         self.debug = args.debug
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
