@@ -31,10 +31,10 @@ def parseArguments():
                         help="File to send", default=f"{PID}.txt")
     parser.add_argument("-a", "--address", type=str,
                         help="Server IP address",  default="10.0.7.141")
-    parser.add_argument("-s", "--receiver_port", type=int,
-                        help="Port number used by the receiver", default=SENDER_PORT)
-    parser.add_argument("-c", "--sender_port", type=int,
-                        help="Port number used by the sender", default=9000)
+    parser.add_argument("-s", "--server_port", type=int,
+                        help="Port number used by the receiver", default=9000)
+    parser.add_argument("-c", "--client_port", type=int,
+                        help="Port number used by the sender", default=SENDER_PORT)
     parser.add_argument("-i", "--id", type=str,
                         help="Unique Identifier", default=PID)
     parser.add_argument("-t", "--tests", type=int,
@@ -92,15 +92,14 @@ class Sender:
     '''
 
     def __init__(self, args) -> None:
-        self.PID = PID
-        self.SENDER_PORT = SENDER_PORT
+        self.PID = args.id
         self.FILE_NAME = args.file
-        self.SENDER_PORT_NO = args.sender_port
-        self.RECEIVER_PORT_NO = args.receiver_port
+        self.SERVER_PORT_NO = args.server_port
+        self.CLIENT_PORT_NO = args.client_port
         self.IP_ADDRESS = args.address
         self.debug = args.debug
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.bind(('', self.RECEIVER_PORT_NO))
+        self.sock.bind(('', self.CLIENT_PORT_NO))
 
     '''
     Send Intent Message Method
@@ -111,8 +110,8 @@ class Sender:
 
     def sendIntentMessage(self):
         intent = f"ID{self.PID}".encode()
-        self.sock.sendto(intent, (self.IP_ADDRESS, self.SENDER_PORT_NO))
-        data, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
+        self.sock.sendto(intent, (self.IP_ADDRESS, self.SERVER_PORT_NO))
+        data, _ = self.sock.recvfrom(self.CLIENT_PORT_NO)
         self.timer = time.time()
         self.TID = data.decode()
 
@@ -179,7 +178,7 @@ class Sender:
                 If reply doesn't come within the set timeout, the timeout exception will be raised.
                 Otherwise, the decoded reply will be saved to the variable ack.
                 '''
-                reply, _ = self.sock.recvfrom(self.RECEIVER_PORT_NO)
+                reply, _ = self.sock.recvfrom(self.CLIENT_PORT_NO)
                 ack = reply.decode()
 
                 '''
@@ -247,7 +246,7 @@ class Sender:
         packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{self.data[self.sent:self.sent+self.size]}"
 
         self.sock.sendto(
-            packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
+            packet.encode(), (self.IP_ADDRESS, self.SERVER_PORT_NO))
 
         self.initial = time.time()
         return seqID, packet
