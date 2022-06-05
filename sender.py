@@ -94,12 +94,12 @@ class Sender:
     def __init__(self, args) -> None:
         self.PID = args.id
         self.FILE_NAME = args.file
-        self.SERVER_PORT_NO = args.server_port
-        self.CLIENT_PORT_NO = args.client_port
+        self.RECEIVER_PORT = args.server_port
+        self.CLIENT_PORT = args.cklient_port
         self.IP_ADDRESS = args.address
         self.debug = args.debug
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.bind(('', self.SERVER_PORT_NO))
+        self.sock.bind(('', self.CLIENT_PORT))
 
     '''
     Send Intent Message Method
@@ -110,8 +110,8 @@ class Sender:
 
     def sendIntentMessage(self):
         intent = f"ID{self.PID}".encode()
-        self.sock.sendto(intent, (self.IP_ADDRESS, self.CLIENT_PORT_NO))
-        data, _ = self.sock.recvfrom(self.SERVER_PORT_NO)
+        self.sock.sendto(intent, (self.IP_ADDRESS, self.RECEIVER_PORT))
+        data, _ = self.sock.recvfrom(self.CLIENT_PORT)
         self.timer = time.time()
         self.TID = data.decode()
 
@@ -178,7 +178,7 @@ class Sender:
                 If reply doesn't come within the set timeout, the timeout exception will be raised.
                 Otherwise, the decoded reply will be saved to the variable ack.
                 '''
-                reply, _ = self.sock.recvfrom(self.SERVER_PORT_NO)
+                reply, _ = self.sock.recvfrom(self.CLIENT_PORT)
                 ack = reply.decode()
 
                 '''
@@ -246,7 +246,7 @@ class Sender:
         packet = f"ID{self.PID}SN{seqID}TXN{self.TID}LAST{isLast}{self.data[self.sent:self.sent+self.size]}"
 
         self.sock.sendto(
-            packet.encode(), (self.IP_ADDRESS, self.SERVER_PORT_NO))
+            packet.encode(), (self.IP_ADDRESS, self.RECEIVER_PORT))
 
         self.initial = time.time()
         return seqID, packet
