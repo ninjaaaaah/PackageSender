@@ -99,7 +99,7 @@ class Sender:
         self.IP_ADDRESS = args.address
         self.debug = args.debug
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.bind(('', self.CLIENT_PORT_NO))
+        self.sock.bind(('', self.SERVER_PORT_NO))
 
     '''
     Send Intent Message Method
