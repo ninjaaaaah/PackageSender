@@ -170,7 +170,7 @@ class Sender:
             if self.checkGuard():
                 break
 
-           self.sendPacket()
+            self.sendPacket()
 
             # Using try catch to catch the timeout exception.
             try:
