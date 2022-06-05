@@ -93,7 +93,6 @@ class Sender:
 
     def __init__(self, args) -> None:
         self.PID = args.id
-        self.SENDER_PORT = SENDER_PORT
         self.FILE_NAME = args.file
         self.SERVER_PORT = args.server_port
         self.CLIENT_PORT = args.client_port
