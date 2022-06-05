@@ -234,10 +234,11 @@ class Sender:
             return True
 
     '''
-    Construct Packet Method
+    Send Packet Method
     ---
     This method constructs the packet to be sent to the server and sends it through UDP socket.
     The initial time would also be initiated here to compute for the RTT of a packet.
+    This method returns the sequence ID and the message of the packet.
     '''
 
     def sendPacket(self):
