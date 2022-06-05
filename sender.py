@@ -249,7 +249,7 @@ class Sender:
             packet.encode(), (self.IP_ADDRESS, self.SENDER_PORT_NO))
 
         self.initial = time.time()
-        return packet, seqID
+        return packet
 
     '''
     Update Parameters Method
